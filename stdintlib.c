@@ -223,6 +223,13 @@ void selfBitReverse(stdint* a){
         setStdBit(a,i,!getStdBit(a,i));
     }
 }
+/**
+ * Add a number to another number
+ *
+ * @param n the first number and also the one to store the result
+ * @param to_add the number to add to the first number
+ * @return void
+ */
 void selfAddition(stdint* n, stdint* to_add){
     stdint* a = n;
     stdint* b = to_add;
@@ -245,6 +252,12 @@ void selfAddition(stdint* n, stdint* to_add){
     }
     setStdBit(a,getSize(a)*INT_SIZE-1,ret);
 }
+/**
+ * Converts an ordinal number to its standard form.
+ *
+ * @param i The ordinal number to convert.
+ * @return The standard form of the ordinal number.
+ */
 stdint* ordinalToStd(ordinal i){
     int a = i & INTMAX;
     int b = (i>>INT_SIZE) & INTMAX;

@@ -1,31 +1,36 @@
 #include "syracuselib.h"
-stdint* computeNextSyracuse(stdint* a,stdint* value){
+/**
+ *   Compute the next syracuse number
+ *   @param a the number to compute the next syracuse number
+ *   @param value the value to add to the number
+ *   @return void
+*/
+void computeNextSyracuse(stdint* a,stdint* value){
     stdint* res=copy(a);
-    if(isEven(res)){
-        rightShift(res);
+    if(isEven(a)){
+        rightShift(a);
     }else{
-        leftShift(res);
-        stdint* tmp = addition(res,a);
-        stdint* tmp2 = addition(tmp,value);
-        res = copy(tmp2);
-        del(tmp);
-        del(tmp2);
+        leftShift(a);
+        selfAddition(a,res);
+        selfAddition(a,value);
     }
-    return res;
+    del(res);
 }
+/**
+ *   Compute the syracuse flight time of a number
+ *   @param a the number to compute the syracuse flight time
+ *   @return the syracuse flight time of the number
+*/
 ordinal syracuseFlightTime(stdint* a){
     ordinal i = 0;
     stdint* res = copy(a);
     stdint* one = intToStd(1);
-    stdint* tmp;
     while(!isEquals(res,one)){
-        tmp = computeNextSyracuse(res,one);
-        del(res);
-        res = tmp;
+        stdint* tmp = copy(res);
+        computeNextSyracuse(res,one);
         i++;
     }
     del(res);
     del(one);
-    del(tmp);
     return i;
 }
