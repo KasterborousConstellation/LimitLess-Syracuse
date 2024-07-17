@@ -26,7 +26,6 @@ ordinal syracuseFlightTime(stdint* a){
     stdint* res = copy(a);
     stdint* one = intToStd(1);
     while(!isEquals(res,one)){
-        stdint* tmp = copy(res);
         computeNextSyracuse(res,one);
         i++;
     }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #ifndef STDINTLIB
 #define STDINTLIB
 /*
@@ -11,6 +12,7 @@ Can be improved by using unsigned long long if i make it work
 //Define bit placement size
 #define ordinal long long
 //Define long int structure
+typedef struct decimal {char* data;ordinal size;ordinal capacity;} decimal;
 typedef struct stdint {int* data;ordinal size;ordinal capacity;} stdint;
 stdint* create(ordinal capacity); ////
 ordinal getSize(stdint* i); ////
@@ -38,10 +40,12 @@ void rightShift(stdint* i);////
 void recursiveRightShift(stdint* a,ordinal i);////
 stdint* addition(stdint* a, stdint* b); /////
 void selfAddition(stdint* a, stdint* b); ////
+stdint* multiplication(stdint* a, stdint* b); ////
+void selfMultiplication(stdint* a, stdint* b); ////
 //CAST FUNCTIONS
 stdint* intToStd(int i); ///
 stdint* ordinalToStd(ordinal i); ////
 #endif
-//COMPLEMENT A DEUX
-stdint* BitReverse(stdint* a); ////
-void selfBitReverse(stdint* a); ////
+//Conversion
+char* convertToChar(stdint* a); ////
+void printDecimalStdInt(stdint* a); ////

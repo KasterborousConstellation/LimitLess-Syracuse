@@ -1,5 +1,6 @@
 #include "stdintlib.h"
 #include "assert.h"
+#include "math.h"
 #define INT_SIZE 32
 #define LONG_SIZE 64
 #define LONGMAX 9223372036854775807
@@ -233,17 +234,20 @@ void selfBitReverse(stdint* a){
 void selfAddition(stdint* n, stdint* to_add){
     stdint* a = n;
     stdint* b = to_add;
+    ordinal size;
     if(getSize(a)<getSize(to_add)){
-        stdint* tmp = a;
-        a = b;
-        b= tmp;
+         size = getSize(to_add);
+         resize(a,size);
+    }else{
+        size = getSize(a);
+        resize(b,size);
     }
-    if(getMSB(a)==1){
+    if(getMSB(a)==1||getMSB(b)==1){
         resize(a,getSize(a)+1);
     }
     //Iterate for every bits of new 
     bool ret = 0;
-    for(ordinal i = 0;i<getSize(a)*INT_SIZE-1;i++){
+    for(ordinal i = 0;i<(size*INT_SIZE);i++){
         bool bit_a = getStdBit(a,i);
         bool bit_b = getStdBit(b,i); 
         bool res = (bit_a + bit_b + ret) & 1; 
@@ -265,4 +269,199 @@ stdint* ordinalToStd(ordinal i){
     data[0] = a;
     data[1] = b;
     return stdint_from(data,2,2);
+}
+int digits_in_base10(ordinal size){
+    return 1 + log(2)*(size)/log(10);
+}
+char getChar(char i){
+    return i+'0';
+}
+void print_decimal(decimal* a){
+    printf("[");
+    for(ordinal i = a->size-1; i>=0 ;i--){
+        char c=getChar(a->data[i]);
+        printf("%c",c);
+    }
+    printf("]");
+    printf("(%lld|%lld)\n",a->size,a->capacity);
+}
+decimal* create_decimal(ordinal capacity){
+    decimal* i = malloc(sizeof(decimal));
+    char* data = malloc(capacity*sizeof(char));
+    i->capacity = capacity;
+    i->size=1;
+    i->data = data;
+    return i;
+}
+decimal* decimal_from(char* array,ordinal size,ordinal capacity){
+    decimal* a = create_decimal(capacity);
+    a->size = size;
+    for(ordinal e = 0; e<size ;e++){
+        a->data[e] = array[e];
+    }
+    return a;
+}
+decimal* char_to_decimal(char a){
+    char* data = malloc(sizeof(char));
+    data[0] = a;
+    return decimal_from(data,1,1);
+}
+decimal* copy_decimal(decimal* a){
+    return decimal_from(a->data,a->size,a->capacity);
+}
+void resize_decimal(decimal* i, ordinal size){
+    if(size>=i->capacity){
+        char* data = malloc(2*size*sizeof(char));
+        for(ordinal e=0;e<i->capacity;e++){
+            data[e] = i->data[e];
+        }
+        i->capacity = 2*size;
+        i->data = data;
+    }else if(size<i->capacity/4){
+        char* data = malloc((i->capacity/2)*sizeof(char));
+        for(ordinal e=0;e<i->capacity/2;e++){
+            data[e] = i->data[e];
+        }
+        i->capacity = i->capacity/2;
+        i->data = data;
+    }
+    if(size>i->size){
+        for(ordinal e = i->size;e<size;e++){
+            i->data[e] =0;
+        }
+    }
+    i->size = size;
+}
+decimal* decimal_addition(decimal* a, decimal* b){
+    a = copy_decimal(a);
+    b = copy_decimal(b);
+    //Exchange a for b if size of a < size of b
+    if(a->size<b->size){
+        decimal* tmp = a;
+        a = b;
+        b= tmp;
+    }
+    decimal* new = copy_decimal(a);
+    //Iterate for every bits of new 
+    bool ret = 0;
+    for(ordinal i = 0;i<new->size;i++){
+        char bit_a = a->data[i];
+        char bit_b = b->data[i]; 
+        char res = (bit_a + bit_b + ret) % 10; 
+        ret = (bit_a + bit_b + ret)/10;
+        new->data[i] = res;
+    }
+    if(ret){
+        resize_decimal(new,new->size+1);
+        new->data[new->size-1] = ret;
+    }
+    return new;
+}
+void del_decimal(decimal* i){
+    free(i->data);
+    free(i);
+}
+decimal* decimalX2 (decimal* a){
+    return decimal_addition(a,a);
+}
+ordinal getSizeDecimal(decimal* a){
+    return a->size;
+}
+void selfAdditionDecimal(decimal* a, decimal* b){
+    ordinal size;
+    if(getSizeDecimal(a)<getSizeDecimal(b)){
+        size = getSizeDecimal(b);
+        resize_decimal(a,size);
+    }else{
+        size = getSizeDecimal(a);
+        resize_decimal(b,size);
+    }
+    //Iterate for every bits of new 
+    bool ret = 0;
+    for(ordinal i = 0;i<size;i++){
+        char bit_a = a->data[i];
+        char bit_b = b->data[i]; 
+        char res = (bit_a + bit_b + ret) % 10; 
+        ret = (bit_a + bit_b + ret)/10;
+        a->data[i] = res;
+    }
+    if(ret){
+        resize_decimal(a,getSizeDecimal(a)+1);
+        a->data[getSizeDecimal(a)-1] = ret;
+    }
+}
+char* convertToChar(stdint* a){
+    decimal* res = char_to_decimal(0);
+    decimal* tmp = char_to_decimal(1);
+    for(ordinal i =0;i<getSize(a)*INT_SIZE;i++){
+        if(getStdBit(a,i)){
+            selfAdditionDecimal(res,tmp);
+        }
+        selfAdditionDecimal(tmp,tmp);
+    }
+    char* data = malloc((getSizeDecimal(res)+1)*sizeof(char));
+    for(ordinal i = 0;i<getSizeDecimal(res);i++){
+        data[getSizeDecimal(res)-i-1] = getChar(res->data[i]);
+    }
+    data[getSizeDecimal(res)] = '\0';
+    del_decimal(res);
+    del_decimal(tmp);
+    return data;
+}
+void printDecimalStdInt(stdint* a){
+    char* data = convertToChar(a);
+    while(*data){
+        printf("%c",*data);
+        data++;
+    }
+    printf("\n");
+    free(data);
+}
+stdint* multiplication(stdint* a, stdint* b){
+    if(isZero(a) || isZero(b)){
+        return intToStd(0);
+    }
+    ordinal size = (getSize(a)<getSize(b))?getSize(b):getSize(a);
+    stdint* top = copy(a);
+    stdint* bottom = copy(b);
+    resize(top,size);
+    resize(bottom,size);
+    stdint* res = intToStd(0);
+    for(ordinal i = 0;i<size*INT_SIZE;i++){
+        if(getStdBit(bottom,i)){
+            selfAddition(res,top);
+        }
+        leftShift(top);
+    }
+    del(top);
+    del(bottom);
+    return res;
+}
+void selfMultiplication(stdint* a, stdint* b){
+    if(isZero(a) || isZero(b)){
+        stdint* z = intToStd(0);
+        a->data = z->data;
+        a->size = z->size;
+        a->capacity = z->capacity;
+        del(z);
+        return;
+    }
+    ordinal size = (getSize(a)<getSize(b))?getSize(b):getSize(a);
+    stdint* top = copy(a);
+    stdint* bottom = copy(b);
+    resize(top,size);
+    resize(bottom,size);
+    stdint* res = intToStd(0);
+    for(ordinal i = 0;i<size*INT_SIZE;i++){
+        if(getStdBit(bottom,i)){
+            selfAddition(res,top);
+        }
+        leftShift(top);
+    }
+    del(top);
+    del(bottom);
+    a->data = res->data;
+    a->size = res->size;
+    a->capacity = res->capacity;
+    del(res);
 }
