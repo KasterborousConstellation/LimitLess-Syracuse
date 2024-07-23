@@ -12,11 +12,13 @@ Then ```"stdsocket.h"``` is used to create the necessary socket to communicate f
 
 -Naive multiplication algorithm
 
--Print to base 2 and base 10 \n
+-Print to base 2 and base 10 
 
 # Contributors
 Author: Supercomete
 
+## License
 
+[MIT](https://choosealicense.com/licenses/mit/)
 
 
