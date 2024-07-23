@@ -236,8 +236,8 @@ void selfAddition(stdint* n, stdint* to_add){
     stdint* b = to_add;
     ordinal size;
     if(getSize(a)<getSize(to_add)){
-         size = getSize(to_add);
-         resize(a,size);
+        size = getSize(to_add);
+        resize(a,size);
     }else{
         size = getSize(a);
         resize(b,size);
@@ -275,15 +275,6 @@ int digits_in_base10(ordinal size){
 }
 char getChar(char i){
     return i+'0';
-}
-void print_decimal(decimal* a){
-    printf("[");
-    for(ordinal i = a->size-1; i>=0 ;i--){
-        char c=getChar(a->data[i]);
-        printf("%c",c);
-    }
-    printf("]");
-    printf("(%lld|%lld)\n",a->size,a->capacity);
 }
 decimal* create_decimal(ordinal capacity){
     decimal* i = malloc(sizeof(decimal));
@@ -332,37 +323,9 @@ void resize_decimal(decimal* i, ordinal size){
     }
     i->size = size;
 }
-decimal* decimal_addition(decimal* a, decimal* b){
-    a = copy_decimal(a);
-    b = copy_decimal(b);
-    //Exchange a for b if size of a < size of b
-    if(a->size<b->size){
-        decimal* tmp = a;
-        a = b;
-        b= tmp;
-    }
-    decimal* new = copy_decimal(a);
-    //Iterate for every bits of new 
-    bool ret = 0;
-    for(ordinal i = 0;i<new->size;i++){
-        char bit_a = a->data[i];
-        char bit_b = b->data[i]; 
-        char res = (bit_a + bit_b + ret) % 10; 
-        ret = (bit_a + bit_b + ret)/10;
-        new->data[i] = res;
-    }
-    if(ret){
-        resize_decimal(new,new->size+1);
-        new->data[new->size-1] = ret;
-    }
-    return new;
-}
 void del_decimal(decimal* i){
     free(i->data);
     free(i);
-}
-decimal* decimalX2 (decimal* a){
-    return decimal_addition(a,a);
 }
 ordinal getSizeDecimal(decimal* a){
     return a->size;
