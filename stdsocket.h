@@ -18,7 +18,7 @@ void startListen(int server);
 void err(int errn);
 void bindSocket(int socket_id, struct sockaddr_in* address);
 void sendToClient(int client, char* message);
-void createThreads(int num_threads,pthread_t* threads_id,int** orders);
+void createThreads(int num_threads,pthread_t* threads_id,int** orders,int client);
 int** getThreadsOrder(int num_threads,int range_begin,int range_end);
 void cancelThread(int id);
 void cancelThreads(int num_threads,pthread_t* threads_id);

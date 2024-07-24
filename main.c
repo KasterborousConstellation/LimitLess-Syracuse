@@ -43,17 +43,17 @@ int main(int argc, char **argv) {
     printf("Creating threads\n");
     pthread_t* threads_id=malloc(num_threads*sizeof(pthread_t));
     int** orders = getThreadsOrder(num_threads,range_begin,range_end);
-    createThreads(num_threads,threads_id,orders);
+    createThreads(num_threads,threads_id,orders,client);
     printf("Threads created\n");
     waitThreads(num_threads,threads_id);
     printf("Threads finished\n");
-    cancelThreads(num_threads,threads_id);
+    //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
     freeOrders(orders);
     free(server_adress);
     free(threads_id);
     //CLOSE CONNEXION
     close(client);
-    close(server);
+    shutdown(server,2);
     return 0;
 }

@@ -1,6 +1,7 @@
 package fr.ls.main;
 import javax.swing.*;
 import java.awt.*;
+import java.net.ConnectException;
 
 public class Main {
     private static int height = 720;
@@ -36,6 +37,8 @@ public class Main {
         mainPane.setBounds(margin, margin, threadContainerWidth, threadContainerHeight);
         frame.add(mainPane);
         frame.setVisible(true);
+
+        client.setUp();
         area.send("CLIENT ONLINE");
     }
 }

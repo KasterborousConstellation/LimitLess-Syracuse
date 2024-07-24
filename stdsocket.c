@@ -1,11 +1,13 @@
 #include "stdsocket.h"
-#define THREAD_PARAM_SIZE 3
+#define THREAD_PARAM_SIZE 4
 void* thread_function(void* arg) {
     int* THREAD_PARAMS = arg;
     int id = THREAD_PARAMS[0];
     int start = THREAD_PARAMS[1];
     int range = THREAD_PARAMS[2];
+    int client = THREAD_PARAMS[3];
     printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
+    sendToClient(client,"T");
     return NULL;
 }
 void set(int* a, int i, int value){
@@ -27,7 +29,7 @@ int** getThreadsOrder(int num_threads,int range_begin,int range_end){
     orders[0] = START_THREADS;
     return orders;
 }
-void createThreads(int num_threads,pthread_t* threads_id,int** orders){
+void createThreads(int num_threads,pthread_t* threads_id,int** orders, int client){
     int* START_THREADS = orders[0];
     int* THREADS_RANGE = orders[1];
     // Create threads
@@ -38,6 +40,7 @@ void createThreads(int num_threads,pthread_t* threads_id,int** orders){
         set(THREAD_PARAMS,0,i);
         set(THREAD_PARAMS,1,START_THREADS[i]);
         set(THREAD_PARAMS,2,THREADS_RANGE[i]);
+        set(THREAD_PARAMS,3,client);
         printf("Creating thread %d\n", i);
         printf("Thread %d start %d range %d\n",THREAD_PARAMS[0],THREAD_PARAMS[1],THREAD_PARAMS[2]);
         pthread_create(threads_id+i, NULL, thread_function, THREADS_PARAMS[i]);
