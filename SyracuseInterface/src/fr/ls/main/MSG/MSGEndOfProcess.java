@@ -1,4 +1,4 @@
-package MSG;
+package fr.ls.main.MSG;
 
 public class MSGEndOfProcess extends MSGFeedback{
 

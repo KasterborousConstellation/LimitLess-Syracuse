@@ -1,4 +1,4 @@
-package MSG;
+package fr.ls.main.MSG;
 public abstract class MSGFeedback {
     private final String source;
     private final long time;

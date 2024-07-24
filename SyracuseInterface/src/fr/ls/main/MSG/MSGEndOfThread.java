@@ -1,4 +1,4 @@
-package MSG;
+package fr.ls.main.MSG;
 
 public class MSGEndOfThread extends MSGFeedback{
     private final int thread;

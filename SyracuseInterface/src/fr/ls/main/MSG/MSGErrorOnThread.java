@@ -1,4 +1,5 @@
-package MSG;
+package fr.ls.main.MSG;
+
 
 public class MSGErrorOnThread extends MSGFeedback{
     private final int thread;

@@ -1,4 +1,7 @@
-import MSG.*;
+package fr.ls.main;
+
+
+import fr.ls.main.MSG.*;
 
 public class MessageHandler {
     public static MSGFeedback parseFeedBack(String message){
