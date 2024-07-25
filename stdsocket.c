@@ -22,9 +22,9 @@ void* thread_function(void* arg) {
     int range = THREAD_PARAMS[2];
     int client = THREAD_PARAMS[3];
     printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
-    sendToClient(client,createOrder('I',id));
+    sendToClient(client,createOrder(THREADONLINE,id));
     sleep(1);
-    sendToClient(client,createOrder('T',id));
+    sendToClient(client,createOrder(ENDOFTHREAD,id));
     return NULL;
 }
 void set(int* a, int i, int value){
@@ -146,4 +146,7 @@ void cancelThreads(int num_threads,pthread_t* threads_id){
     for(int i = 0; i < num_threads; i++) {
         cancelThread(threads_id[i]);
     }
+}
+void finished(int client){
+    sendToClient(client,createOrder(ENDOFPROCESS,-1));
 }

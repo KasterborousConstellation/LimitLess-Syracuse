@@ -10,6 +10,9 @@ public class ThreadContainer extends JPanel {
     }
     public ThreadContainer(int num_threads){
         super(new GridLayout(num_threads / 3 + 1, 3, 10, 10));
+        Dimension dimension = new Dimension(Main.threadContainerWidth,Main.threadContainerHeight);
+        setSize(dimension);
+        setMaximumSize(dimension);
     }
     public ThreadPanel getPanel(int i){
         return panels.get(i);

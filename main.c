@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     client = accept_connexion(server, (struct sockaddr *)server_adress);
     printf("Client connected\n");
     //THREADS ALLOCATION
-    sleep(10);
+    sleep(1);
     printf("Creating threads\n");
     pthread_t* threads_id=malloc(num_threads*sizeof(pthread_t));
     int** orders = getThreadsOrder(num_threads,range_begin,range_end);
@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
     printf("Threads created\n");
     waitThreads(num_threads,threads_id);
     printf("Threads finished\n");
+    finished(client);
     //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
     freeOrders(orders);

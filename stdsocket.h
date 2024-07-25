@@ -12,6 +12,9 @@
 #include <pthread.h>
 #ifndef STDSOCKET
 #define STDOCKET
+#define ENDOFPROCESS 'T'
+#define ENDOFTHREAD 'E'
+#define THREADONLINE 'I'
 struct sockaddr_in* createSocket(int port);
 int allocateSocket();
 void startListen(int server);
@@ -24,4 +27,5 @@ void cancelThread(int id);
 void cancelThreads(int num_threads,pthread_t* threads_id);
 void waitThreads(int num_threads,pthread_t* threads_id);
 int accept_connexion(int server, struct sockaddr *addr);
+void finished(int client);
 #endif
