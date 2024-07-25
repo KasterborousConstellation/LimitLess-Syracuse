@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 public class ClientHandler {
     private final String host;
@@ -22,7 +23,7 @@ public class ClientHandler {
         {
             socket = new Socket(host, port);
             inStream = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()));
+                    socket.getInputStream(), StandardCharsets.US_ASCII));
         } catch(UnknownHostException e) {
             System.err.println("Cannot find host called: " + host);
             e.printStackTrace();

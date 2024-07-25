@@ -14,7 +14,7 @@ JAR_OUTPUT = SyracuseInterface/build/SyracuseInterface.jar
 MANIFEST_PATH = $(SOURCE_PATH)/MANIFEST.MF
 #SOCKET
 ADDRESS = "0.0.0.0"
-PORT = 8080
+PORT = 8081
 run_server: C
 run_client: java
 java:
@@ -30,7 +30,7 @@ stdsocket: stdsocket.c stdsocket.h
 	$(COMPILER) -c stdsocket.c $(FLAGS)
 C: main.c syracuselib stdintlib stdsocket
 	$(COMPILER) -o main syracuselib.o stdintlib.o stdsocket.o main.c $(FLAGS)
-	./main $(N_THREADS) $(RANGE_BEGIN) $(RANGE_END)
+	./main $(N_THREADS) $(RANGE_BEGIN) $(RANGE_END) $(PORT)
 archivage:
 	tar -zcvf tab.tar *c *h Makefile
 clean: 

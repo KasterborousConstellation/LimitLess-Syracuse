@@ -1,5 +1,5 @@
 #include "stdsocket.h"
-#define PARAMS 4
+#define PARAMS 5
 void freeOrders(int** orders){
     free(orders[0]);
     free(orders[1]);
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
         printf("Invalid range\n");
         return 0;
     }
-    int port = 8080;
+    int port = atoi(argv[4]);
     // Create the socket
     printf("Creating socket\n");
     printf("Port: %d\n",port);
@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
     client = accept_connexion(server, (struct sockaddr *)server_adress);
     printf("Client connected\n");
     //THREADS ALLOCATION
+    sleep(10);
     printf("Creating threads\n");
     pthread_t* threads_id=malloc(num_threads*sizeof(pthread_t));
     int** orders = getThreadsOrder(num_threads,range_begin,range_end);

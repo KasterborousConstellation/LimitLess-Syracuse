@@ -1,5 +1,20 @@
 #include "stdsocket.h"
+#include <string.h>
 #define THREAD_PARAM_SIZE 4
+char* createOrder(char type,int thread){
+    stdint* i = intToStd(thread);
+    char* sequence = convertToChar(i);
+    char* sequence2 = malloc((strlen(sequence)+2 )*sizeof(char));
+    for(int i =0;i<(int)strlen(sequence);i++){
+        sequence2[i+1] = sequence[i];
+    }
+    sequence2[0] = type;
+    sequence2[strlen(sequence)+1] = '\n';
+    sequence2[strlen(sequence)+2] = '\0';
+    del(i);
+    free(sequence);
+    return sequence2;
+}
 void* thread_function(void* arg) {
     int* THREAD_PARAMS = arg;
     int id = THREAD_PARAMS[0];
@@ -7,7 +22,9 @@ void* thread_function(void* arg) {
     int range = THREAD_PARAMS[2];
     int client = THREAD_PARAMS[3];
     printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
-    sendToClient(client,"T");
+    sendToClient(client,createOrder('I',id));
+    sleep(1);
+    sendToClient(client,createOrder('T',id));
     return NULL;
 }
 void set(int* a, int i, int value){
@@ -67,6 +84,7 @@ void err(int errn){
             return;
         case 2:
             printf("Bind to the port has failed\n");
+            exit(EXIT_FAILURE);
             return;
         case 3:
             printf("Unable to listen or an error has occured while listening\n");
@@ -112,9 +130,11 @@ int accept_connexion(int server, struct sockaddr *addr){
     }
     return client;
 }
+
 void sendToClient(int client, char* message){
-    int sent = send(client,message,strlen(message),0);
-    if(sent==-1){
+    char* encoded_input = message;
+    int sent = send(client, encoded_input, strlen(encoded_input), 0);
+    if (sent == -1) {
         err(5);
     }
     return;

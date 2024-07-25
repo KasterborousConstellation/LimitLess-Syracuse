@@ -1,4 +1,7 @@
 package fr.ls.main;
+import fr.ls.main.MSG.MSGFeedback;
+import fr.ls.main.MSG.MSGThreadOnline;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.ConnectException;
@@ -40,5 +43,16 @@ public class Main {
 
         client.setUp();
         area.send("CLIENT ONLINE");
+        while(!finished){
+            if(client.canRead()){
+                final String message = client.read();
+                System.out.println("RECEIVED: "+message);
+                final MSGFeedback fb = MessageHandler.parseFeedBack(message);
+                if(fb instanceof MSGThreadOnline online){
+                    mainPane.getPanel(online.getThread()).setStatus(ThreadState.ONLINE);
+                    area.send("THREAD "+online.getThread()+" is ONLINE");
+                }
+            }
+        }
     }
 }
