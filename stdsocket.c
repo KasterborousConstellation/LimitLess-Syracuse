@@ -22,9 +22,9 @@ void* thread_function(void* arg) {
     int range = THREAD_PARAMS[2];
     int client = THREAD_PARAMS[3];
     printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
-    sendToClient(client,createOrder(THREADONLINE,id));
+    sendToServer(client,createOrder(THREADONLINE,id));
     sleep(1);
-    sendToClient(client,createOrder(ENDOFTHREAD,id));
+    sendToServer(client,createOrder(ENDOFTHREAD,id));
     return NULL;
 }
 void set(int* a, int i, int value){
@@ -70,8 +70,9 @@ void waitThreads(int num_threads,pthread_t* threads_id){
         pthread_join(threads_id[i], NULL);
     }
 }
-struct sockaddr_in* createSocket(int port){
+struct sockaddr_in* getSocket(int port){
     struct sockaddr_in* server = malloc(sizeof(struct sockaddr_in));
+    memset(server, 0, sizeof(struct sockaddr_in));
     server->sin_family = AF_INET;
     server->sin_port = htons(port);
     server->sin_addr.s_addr = INADDR_ANY;
@@ -90,10 +91,10 @@ void err(int errn){
             printf("Unable to listen or an error has occured while listening\n");
             return;
         case 4:
-            printf("Client connexion failed\n");
+            printf("Server connexion failed\n");
             return;
         case 5:
-            printf("Sending information to client failed\n");
+            printf("Sending information to server failed\n");
             return;
         default:
             printf("An unknown error has occured\n");
@@ -105,35 +106,25 @@ int allocateSocket(){
     int server = socket(AF_INET, SOCK_STREAM, 0);
     if(server < 0){
         err(1);
+        exit(EXIT_FAILURE);
     }
     return server;
 }
-void bindSocket(int socket_id, struct sockaddr_in* address) {
-    int bind_result = bind(socket_id, (struct sockaddr*)address, sizeof(struct sockaddr_in));
-    if (bind_result == -1) {
-        err(2);
-    }
-    return;
-}
-void startListen(int server){
-    int back = listen(server,1);
-    if(back==-1){
-        err(3);
-    }
-    return;
-}
-int accept_connexion(int server, struct sockaddr *addr){
-    socklen_t addrlen = sizeof(addr);
-    int client = accept(server,addr,&addrlen);
+
+int connectServer(int server, struct sockaddr_in *addr){
+    socklen_t addrlen = sizeof(*addr);
+    int client = connect(server,(struct sockaddr*)addr,addrlen);
     if(client==-1){
         err(4);
+        exit(EXIT_FAILURE);
     }
     return client;
 }
 
-void sendToClient(int client, char* message){
+void sendToServer(int server_fd, char* message){
     char* encoded_input = message;
-    int sent = send(client, encoded_input, strlen(encoded_input), 0);
+    printf("Sending: %s",encoded_input);
+    int sent = send(server_fd, encoded_input, strlen(encoded_input), 0);
     if (sent == -1) {
         err(5);
     }
@@ -148,5 +139,11 @@ void cancelThreads(int num_threads,pthread_t* threads_id){
     }
 }
 void finished(int client){
-    sendToClient(client,createOrder(ENDOFPROCESS,-1));
+    sendToServer(client,createOrder(ENDOFPROCESS,-1));
+}
+void agentOnline(int client,char agentID){
+    sendToServer(client,createOrder(AGENTONLINE,(int)agentID));
+}
+void agentThreadInfo(int client,int threads){
+    sendToServer(client,createOrder(AGENTTHREAD,threads));
 }

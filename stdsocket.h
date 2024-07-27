@@ -15,17 +15,19 @@
 #define ENDOFPROCESS 'T'
 #define ENDOFTHREAD 'E'
 #define THREADONLINE 'I'
-struct sockaddr_in* createSocket(int port);
+#define AGENTONLINE 'A'
+#define AGENTTHREAD 'L'
+struct sockaddr_in* getSocket(int port);
 int allocateSocket();
-void startListen(int server);
 void err(int errn);
-void bindSocket(int socket_id, struct sockaddr_in* address);
-void sendToClient(int client, char* message);
+void sendToServer(int client, char* message);
 void createThreads(int num_threads,pthread_t* threads_id,int** orders,int client);
 int** getThreadsOrder(int num_threads,int range_begin,int range_end);
 void cancelThread(int id);
 void cancelThreads(int num_threads,pthread_t* threads_id);
 void waitThreads(int num_threads,pthread_t* threads_id);
-int accept_connexion(int server, struct sockaddr *addr);
+int connectServer(int server, struct sockaddr_in *addr);
 void finished(int client);
+void agentOnline(int client,char agentID);
+void agentThreadInfo(int client,int threads);
 #endif

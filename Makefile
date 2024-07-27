@@ -28,9 +28,11 @@ syracuselib: syracuselib.c syracuselib.h
 	$(COMPILER) -c syracuselib.c $(FLAGS)
 stdsocket: stdsocket.c stdsocket.h
 	$(COMPILER) -c stdsocket.c $(FLAGS)
-C: main.c syracuselib stdintlib stdsocket
-	$(COMPILER) -o main syracuselib.o stdintlib.o stdsocket.o main.c $(FLAGS)
-	./main $(N_THREADS) $(RANGE_BEGIN) $(RANGE_END) $(PORT)
+corelib: coreLib.c coreLib.h
+	$(COMPILER) -c coreLib.c $(FLAGS)
+C: main.c syracuselib stdintlib stdsocket corelib
+	$(COMPILER) -o main syracuselib.o stdintlib.o stdsocket.o coreLib.o main.c $(FLAGS)
+	./main $(RANGE_BEGIN) $(RANGE_END) $(PORT)
 archivage:
 	tar -zcvf tab.tar *c *h Makefile
 clean: 

@@ -14,6 +14,8 @@ public class MessageHandler {
             case 'E' -> new MSGEndOfThread(message,parseThreadNumber(message));
             case 'T' -> new MSGEndOfProcess(message);
             case 'F' -> new MSGErrorOnThread(message, parseThreadNumber(message));
+            case 'A' -> new MSGAgentOnline(message);
+            case 'L' -> new MSGNThreads(message,parseThreadNumber(message));
             default -> new MSGUnknown(message);
         };
     }
