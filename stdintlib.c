@@ -167,7 +167,7 @@ stdint* addition(stdint* a, stdint* b){
     setStdBit(new,getSize(new)*INT_SIZE-1,ret);
     return new;
 }
-stdint* intToStd(int i){
+stdint* intToStd(unsigned int i){
     int* data = malloc(sizeof(int));
     data[0] = i;
     stdint* a = stdint_from(data,1,1);

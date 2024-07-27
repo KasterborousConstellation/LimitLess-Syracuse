@@ -116,7 +116,6 @@ int connectServer(int server, struct sockaddr_in *addr){
     int client = connect(server,(struct sockaddr*)addr,addrlen);
     if(client==-1){
         err(4);
-        exit(EXIT_FAILURE);
     }
     return client;
 }
@@ -141,8 +140,11 @@ void cancelThreads(int num_threads,pthread_t* threads_id){
 void finished(int client){
     sendToServer(client,createOrder(ENDOFPROCESS,-1));
 }
-void agentOnline(int client,char agentID){
-    sendToServer(client,createOrder(AGENTONLINE,(int)agentID));
+void converseProtocol(int server_fd,char type, int info){
+    sendToServer(server_fd,createOrder(type,info));
+}
+void agentOnline(int server_fd,char agentID){
+    converseProtocol(server_fd,AGENTONLINE,(int)agentID);
 }
 void agentThreadInfo(int client,int threads){
     sendToServer(client,createOrder(AGENTTHREAD,threads));

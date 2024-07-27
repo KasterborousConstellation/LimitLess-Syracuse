@@ -15,6 +15,7 @@ MANIFEST_PATH = $(SOURCE_PATH)/MANIFEST.MF
 #SOCKET
 ADDRESS = "0.0.0.0"
 PORT = 8080
+
 run_server: C
 run_client: java
 java:

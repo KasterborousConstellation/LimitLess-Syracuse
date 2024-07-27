@@ -30,4 +30,5 @@ int connectServer(int server, struct sockaddr_in *addr);
 void finished(int client);
 void agentOnline(int client,char agentID);
 void agentThreadInfo(int client,int threads);
+char* createOrder(char type, int data);
 #endif

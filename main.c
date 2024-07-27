@@ -33,9 +33,25 @@ int main(int argc, char **argv) {
     int server_fd= allocateSocket(server_adress);
     printf("Socket allocated\n");
     printf("Connecting...\n");
-    int connexion = connectServer(server_fd,(struct sockaddr_in*)server_adress);
-    printf("Client connected\n");
+    int connexion =-1;
+    while(connexion==-1){
+        printf("Trying to connect to server\n");
+        connexion = connectServer(server_fd,(struct sockaddr_in*)server_adress);
+        if(connexion==-1){
+            printf("Connection failed. Next try in 2s\n");
+            sleep(2);
+        }
+    }
+    printf("Client connected to socket\n");
+    printf("Waiting for server clearance\n");
+    //We now need to wait for the response of the server
+    char* buffer[4];
+    int response = recv(server_fd,buffer,4 ,0);
+    buffer[response]='\0';
+    printf("%d\n",response);
+    printf("%s\n",buffer);
     //AGENT INFO SYNC
+    sleep(2);
     printf("Agent online\n");
     printf("Agent ID: %c\n",agentID);
     agentOnline(server_fd,agentID);
@@ -52,10 +68,11 @@ int main(int argc, char **argv) {
     printf("Threads finished\n");
     //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
+    sendToServer(server_fd,createOrder(ENDOFPROCESS,0));
     freeOrders(orders);
     free(server_adress);
     free(threads_id);
     //CLOSE CONNEXION
-    close(server_fd);
+    shutdown(server_fd,SHUT_RDWR);
     return 0;
 }

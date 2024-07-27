@@ -14,6 +14,7 @@ public class Main {
     public static int threadContainerWidth = (int)((float)width / 3.0F) - 2 * margin;
     public static int threadContainerHeight = textHeight - 2 * margin;
     private static boolean finished = false;
+    public static UpdateArea area_glb;
     public static void main(String[] args) throws IOException {
         final ServerHandler server = new ServerHandler(args[0], Integer.parseInt(args[1]));
         JFrame frame = new JFrame();
@@ -22,6 +23,7 @@ public class Main {
         frame.setLayout(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         final UpdateArea area = new UpdateArea(10, 10);
+        area_glb = area;
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setEditable(false);
@@ -38,21 +40,32 @@ public class Main {
         button.setVisible(true);
         frame.add(button);
         while(!finished){
-            if(server.canRead()){
-                final ReadRecord message = server.read();
-                System.out.println("RECEIVED "+message.line());
-                final Client client = message.client();
-                final MSGFeedback fb = MessageHandler.parseFeedBack(message.line());
-                if(fb instanceof MSGAgentOnline){
-                    container.createAgent(client);
-                }else if(fb instanceof MSGNThreads msgnThreads){
-                    final Agent agent = container.getAgent(client);
-                    agent.setThreads(msgnThreads.getThreads());
-                    //Create interface for this client
-                    container.getDisplay(client).launch();
-                    container.revalidate();
-                }
+            //FLUSH BECAUSE IF I DON'T IT DOESN'T WORK
+            //PLEASE HELP ME ON THIS
+            System.out.flush();
+            final ReadRecord message = server.read();
+            if(message == ReadRecord.errorRecord)continue;
+            final Client client = message.client();
+            final MSGFeedback fb = MessageHandler.parseFeedBack(message.line());
+            if(fb instanceof MSGAgentOnline){
+                container.createAgent(client);
+            }else if(fb instanceof MSGNThreads msgnThreads){
+                final Agent agent = container.getAgent(client);
+                agent.setThreads(msgnThreads.getThreads());
+                //Create interface for this client
+                container.getDisplay(client).launch();
+                container.revalidate();
+            }else if(fb instanceof MSGThreadOnline msgThreadOnline){
+                final Agent agent = container.getAgent(client);
+                ThreadPanel threadPanel = container.getDisplay(client).getPanel(msgThreadOnline.getThread());
+                threadPanel.setStatus(ThreadState.ONLINE);
+            }else if(fb instanceof MSGEndOfThread msgEndOfThread){
+                final Agent agent = container.getAgent(client);
+                ThreadPanel threadPanel = container.getDisplay(client).getPanel(msgEndOfThread.getThread());
+                threadPanel.setStatus(ThreadState.OFFLINE);
             }
+            final Agent agent = container.getAgent(client);
+            System.out.println("RECEIVED from "+agent.getName()+":"+message.line());
         }
     }
 }

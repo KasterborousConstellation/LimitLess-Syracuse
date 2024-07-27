@@ -43,9 +43,9 @@ void selfAddition(stdint* a, stdint* b); ////
 stdint* multiplication(stdint* a, stdint* b); ////
 void selfMultiplication(stdint* a, stdint* b); ////
 //CAST FUNCTIONS
-stdint* intToStd(int i); ///
+stdint* intToStd(unsigned int i); ///
 stdint* ordinalToStd(ordinal i); ////
-#endif
 //Conversion
 char* convertToChar(stdint* a); ////
 void printDecimalStdInt(stdint* a); ////
+#endif
