@@ -11,9 +11,10 @@ Can be improved by using unsigned long long if i make it work
 */
 //Define bit placement size
 #define ordinal long long
+#define format unsigned int
 //Define long int structure
 typedef struct decimal {char* data;ordinal size;ordinal capacity;} decimal;
-typedef struct stdint {int* data;ordinal size;ordinal capacity;} stdint;
+typedef struct stdint {format* data;ordinal size;ordinal capacity;} stdint;
 stdint* create(ordinal capacity); ////
 ordinal getSize(stdint* i); ////
 ordinal getCapacity(stdint* i); ////
@@ -26,7 +27,7 @@ void del(stdint* i);////
 void print_stdint(stdint* a);////
 bool getMSB(stdint* a); ////
 stdint* copy(stdint* a);
-stdint* stdint_from(int* array,ordinal size,ordinal capacity);////
+stdint* stdint_from(unsigned int* array,ordinal size,ordinal capacity);////
 bool isOdd(stdint* a);////
 bool isEven(stdint* a);////
 bool isZero(stdint* a);////

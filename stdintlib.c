@@ -5,7 +5,7 @@
 #define LONG_SIZE 64
 #define LONGMAX 9223372036854775807
 #define INTMAX 2147483647
-stdint* stdint_from(int* array,ordinal size,ordinal capacity){
+stdint* stdint_from(unsigned int* array,ordinal size,ordinal capacity){
     stdint* a = create(capacity);
     a->size = size;
     for(ordinal e = 0; e<size ;e++){
@@ -21,7 +21,7 @@ ordinal getCapacity(stdint* a){
 }
 stdint* create(ordinal capacity){
     stdint* i = malloc(sizeof(stdint));
-    int* data = malloc(capacity*sizeof(int));
+    int* data = malloc(capacity*sizeof(format));
     i->capacity = capacity;
     i->size=1;
     i->data = data;
