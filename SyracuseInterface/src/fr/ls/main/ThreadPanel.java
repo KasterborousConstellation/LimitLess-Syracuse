@@ -36,6 +36,7 @@ public class ThreadPanel extends JPanel {
         Color color = state.getColor();
         this.status.setText(sts);
         this.status.setForeground(color);
+        updateUI();
     }
     public void setDescription(String str){
         this.descriptor.setText(str);

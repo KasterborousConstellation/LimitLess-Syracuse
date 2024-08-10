@@ -21,6 +21,7 @@ public class Main {
         frame.setSize(width, height);
         frame.setName("KTBS-LS");
         frame.setLayout(null);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         final UpdateArea area = new UpdateArea(10, 10);
         area_glb = area;
@@ -47,25 +48,14 @@ public class Main {
             if(message == ReadRecord.errorRecord)continue;
             final Client client = message.client();
             final MSGFeedback fb = MessageHandler.parseFeedBack(message.line());
-            if(fb instanceof MSGAgentOnline){
-                container.createAgent(client);
-            }else if(fb instanceof MSGNThreads msgnThreads){
-                final Agent agent = container.getAgent(client);
-                agent.setThreads(msgnThreads.getThreads());
-                //Create interface for this client
-                container.getDisplay(client).launch();
-                container.revalidate();
-            }else if(fb instanceof MSGThreadOnline msgThreadOnline){
-                final Agent agent = container.getAgent(client);
-                ThreadPanel threadPanel = container.getDisplay(client).getPanel(msgThreadOnline.getThread());
-                threadPanel.setStatus(ThreadState.ONLINE);
-            }else if(fb instanceof MSGEndOfThread msgEndOfThread){
-                final Agent agent = container.getAgent(client);
-                ThreadPanel threadPanel = container.getDisplay(client).getPanel(msgEndOfThread.getThread());
-                threadPanel.setStatus(ThreadState.OFFLINE);
-            }
+            fb.handle(container,client,message.line());
             final Agent agent = container.getAgent(client);
+            if(agent==null)continue;
             System.out.println("RECEIVED from "+agent.getName()+":"+message.line());
+            fb.handleLate(container,client,message.line());
         }
+    }
+    public static void sendMessage(Agent agent, String message){
+        area_glb.send(MessageHandler.Identifier(agent)+" "+message);
     }
 }

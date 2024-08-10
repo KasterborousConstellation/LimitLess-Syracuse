@@ -23,4 +23,7 @@ public class MessageHandler {
         assert(message.length()>0);
         return message.charAt(0);
     }
+    public static String Identifier(Agent agent){
+        return "[A|"+agent.getUsername()+"]";
+    }
 }
