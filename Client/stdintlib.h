@@ -27,7 +27,7 @@ void del(stdint* i);////
 void print_stdint(stdint* a);////
 bool getMSB(stdint* a); ////
 stdint* copy(stdint* a);
-stdint* stdint_from(unsigned int* array,ordinal size,ordinal capacity);////
+stdint* stdint_from(format* array,ordinal size,ordinal capacity);////
 bool isOdd(stdint* a);////
 bool isEven(stdint* a);////
 bool isZero(stdint* a);////

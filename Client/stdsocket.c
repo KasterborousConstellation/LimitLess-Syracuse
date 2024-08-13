@@ -23,6 +23,7 @@ void* thread_function(void* arg) {
     int client = THREAD_PARAMS[3];
     printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
     sendToServer(client,createOrder(THREADONLINE,id));
+    sendThreadDescription(client,id,"Thread is starting");
     sleep(1);
     sendToServer(client,createOrder(ENDOFTHREAD,id));
     return NULL;
@@ -82,6 +83,7 @@ void err(int errn){
     switch(errn){
         case 1:
             printf("Allocation of the socket has failed\n");
+            exit(EXIT_FAILURE);
             return;
         case 2:
             printf("Bind to the port has failed\n");
@@ -148,4 +150,21 @@ void agentOnline(int server_fd,char agentID){
 }
 void agentThreadInfo(int client,int threads){
     sendToServer(client,createOrder(AGENTTHREAD,threads));
+}
+void sendThreadDescription(int client, int thread, char* description){
+    char* t_seq = convertToChar(intToStd(thread));
+    const int size = (strlen(t_seq)+strlen(description)+4);
+    char* message = malloc(size*sizeof(char));
+    message[0] = THREADDESCRIPTION;
+    for(size_t i = 0; i<strlen(t_seq);i++){
+        message[i+1] = t_seq[i];
+    }
+    message[strlen(t_seq)+1] = ';';
+    for(size_t i = 0; i<strlen(description);i++){
+        message[i+2+strlen(t_seq)] = description[i];
+    }
+    message[size-2] = '\n';
+    message[size-1] = '\0';
+    sendToServer(client,message);
+    free(message);
 }

@@ -5,7 +5,7 @@
 #define LONG_SIZE 64
 #define LONGMAX 9223372036854775807
 #define INTMAX 2147483647
-stdint* stdint_from(unsigned int* array,ordinal size,ordinal capacity){
+stdint* stdint_from(format* array,ordinal size,ordinal capacity){
     stdint* a = create(capacity);
     a->size = size;
     for(ordinal e = 0; e<size ;e++){
@@ -21,7 +21,7 @@ ordinal getCapacity(stdint* a){
 }
 stdint* create(ordinal capacity){
     stdint* i = malloc(sizeof(stdint));
-    int* data = malloc(capacity*sizeof(format));
+    format* data = malloc(capacity*sizeof(format));
     i->capacity = capacity;
     i->size=1;
     i->data = data;
@@ -37,14 +37,14 @@ void setSize(stdint* i,ordinal size){
 }
 void resize(stdint* i, ordinal size){
     if(size>=getCapacity(i)){
-        int* data = malloc(2*size*sizeof(int));
+        format* data = malloc(2*size*sizeof(int));
         for(ordinal e=0;e<getCapacity(i);e++){
             data[e] = i->data[e];
         }
         i->capacity = 2*size;
         i->data = data;
     }else if(size<getCapacity(i)/4){
-        int* data = malloc((getCapacity(i)/2)*sizeof(int));
+        format* data = malloc((getCapacity(i)/2)*sizeof(int));
         for(ordinal e=0;e<getCapacity(i)/2;e++){
             data[e] = i->data[e];
         }
@@ -168,7 +168,7 @@ stdint* addition(stdint* a, stdint* b){
     return new;
 }
 stdint* intToStd(unsigned int i){
-    int* data = malloc(sizeof(int));
+    format* data = malloc(sizeof(format));
     data[0] = i;
     stdint* a = stdint_from(data,1,1);
     free(data);
@@ -265,7 +265,7 @@ void selfAddition(stdint* n, stdint* to_add){
 stdint* ordinalToStd(ordinal i){
     int a = i & INTMAX;
     int b = (i>>INT_SIZE) & INTMAX;
-    int* data = malloc(2*sizeof(int));
+    format* data = malloc(2*sizeof(format));
     data[0] = a;
     data[1] = b;
     return stdint_from(data,2,2);

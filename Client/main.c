@@ -43,12 +43,11 @@ int main(int argc, char **argv) {
         }
     }
     printf("Client connected to socket\n");
-    printf("Waiting for server clearance\n");
+    printf("\e[0;32mWaiting for server clearance\n");
     //We now need to wait for the response of the server
-    char* buffer[4];
-    int response = recv(server_fd,buffer,4 ,0);
+    char* buffer[1024];
+    int response = recv(server_fd,buffer,1023 ,0);
     buffer[response]='\0';
-    printf("%d\n",response);
     printf("%s\n",buffer);
     //AGENT INFO SYNC
     sleep(2);

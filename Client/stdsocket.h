@@ -17,6 +17,8 @@
 #define THREADONLINE 'I'
 #define AGENTONLINE 'A'
 #define AGENTTHREAD 'L'
+#define THREADDESCRIPTION 'D'
+
 struct sockaddr_in* getSocket(int port);
 int allocateSocket();
 void err(int errn);
@@ -31,4 +33,5 @@ void finished(int client);
 void agentOnline(int client,char agentID);
 void agentThreadInfo(int client,int threads);
 char* createOrder(char type, int data);
+void sendThreadDescription(int client, int thread, char* description);
 #endif
