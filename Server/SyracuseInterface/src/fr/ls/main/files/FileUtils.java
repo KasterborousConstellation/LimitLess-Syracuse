@@ -1,6 +1,10 @@
 package fr.ls.main.files;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 public class FileUtils {
     public static void createDirectory(File file) {
         if(!file.exists()){
@@ -21,9 +25,17 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
+    public static String readFull(File file){
+        ArrayList<String> lines = read(file);
+        StringBuilder content = new StringBuilder();
+        for(final String line : lines){
+            content.append(line).append("\n");
+        }
+        return content.toString();
+    }
     public static ArrayList<String> read(File file) {
         try {
-            final FileReader reader = new FileReader(file);
+            final FileReader reader = new FileReader(file, StandardCharsets.ISO_8859_1);
             final ArrayList<String> lines = new ArrayList<>();
             final BufferedReader bufferedReader = new BufferedReader(reader);
             String line;

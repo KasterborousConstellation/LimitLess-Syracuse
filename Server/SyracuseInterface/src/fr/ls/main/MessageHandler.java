@@ -3,14 +3,20 @@ package fr.ls.main;
 
 import fr.ls.main.MSG.*;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class MessageHandler {
     private static int parseThreadNumber(String e){
         return Integer.parseInt(e.substring(1));
     }
-    private static MSGThreadDescriptor parseThreadDescriptor(String e){
+    private static MSGFeedback parseDoubleMessage(String e,Class<? extends MSGFeedback> c) {
         final String currentMessage = e.substring(1);
         final String[] parts = currentMessage.split(";");
-        return new MSGThreadDescriptor(e,Integer.parseInt(parts[0]),parts[1]);
+        try {
+            return (MSGFeedback) c.getConstructors()[0].newInstance(e, Integer.parseInt(parts[0]), parts[1]);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+            return null;
+        }
     }
     public static MSGFeedback parseFeedBack(String message){
         char t = getType(message);
@@ -19,9 +25,9 @@ public class MessageHandler {
             case 'E' -> new MSGEndOfThread(message,parseThreadNumber(message));
             case 'T' -> new MSGEndOfProcess(message);
             case 'F' -> new MSGErrorOnThread(message, parseThreadNumber(message));
-            case 'A' -> new MSGAgentOnline(message);
+            case 'A' -> parseDoubleMessage(message,MSGAgentOnline.class);
             case 'L' -> new MSGNThreads(message,parseThreadNumber(message));
-            case 'D' -> parseThreadDescriptor(message);
+            case 'D' -> parseDoubleMessage(message,MSGThreadDescriptor.class);
             default -> new MSGUnknown(message);
         };
     }

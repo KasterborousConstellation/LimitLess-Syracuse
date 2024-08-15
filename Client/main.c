@@ -1,6 +1,6 @@
 #include "stdsocket.h"
 #include "coreLib.h"
-#define PARAMS 4
+#define PARAMS 5
 void freeOrders(int** orders){
     free(orders[0]);
     free(orders[1]);
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     sleep(2);
     printf("Agent online\n");
     printf("Agent ID: %c\n",agentID);
-    agentOnline(server_fd,agentID);
+    sendAgentOnlineAndSecurity(server_fd,agentID,argv[4]);
     agentThreadInfo(server_fd,num_threads);
     printf("Agent info sent\n");
     //THREADS ALLOCATION

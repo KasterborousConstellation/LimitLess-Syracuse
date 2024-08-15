@@ -145,26 +145,29 @@ void finished(int client){
 void converseProtocol(int server_fd,char type, int info){
     sendToServer(server_fd,createOrder(type,info));
 }
-void agentOnline(int server_fd,char agentID){
-    converseProtocol(server_fd,AGENTONLINE,(int)agentID);
-}
 void agentThreadInfo(int client,int threads){
     sendToServer(client,createOrder(AGENTTHREAD,threads));
 }
-void sendThreadDescription(int client, int thread, char* description){
+void sendDoubleInfoMessage(int client,char protocol, int thread, char* des){
     char* t_seq = convertToChar(intToStd(thread));
-    const int size = (strlen(t_seq)+strlen(description)+4);
+    const int size = (strlen(t_seq)+strlen(des)+4);
     char* message = malloc(size*sizeof(char));
-    message[0] = THREADDESCRIPTION;
+    message[0] = protocol;
     for(size_t i = 0; i<strlen(t_seq);i++){
         message[i+1] = t_seq[i];
     }
     message[strlen(t_seq)+1] = ';';
-    for(size_t i = 0; i<strlen(description);i++){
-        message[i+2+strlen(t_seq)] = description[i];
+    for(size_t i = 0; i<strlen(des);i++){
+        message[i+2+strlen(t_seq)] = des[i];
     }
     message[size-2] = '\n';
     message[size-1] = '\0';
     sendToServer(client,message);
     free(message);
+}
+void sendThreadDescription(int client, int thread, char* description){
+    sendDoubleInfoMessage(client,THREADDESCRIPTION,thread,description);
+}
+void sendAgentOnlineAndSecurity(int client,char agentID,char* key){
+    sendDoubleInfoMessage(client,AGENTONLINE,(int)agentID,key);
 }

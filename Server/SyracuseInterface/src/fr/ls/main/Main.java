@@ -17,11 +17,14 @@ public class Main {
     public static int threadContainerHeight = textHeight - 2 * margin;
     private static boolean finished = false;
     public static String PROJECT_NAME;
+    public static String SECURITY_KEY;
     public static UpdateArea area_glb;
+    public static ServerHandler server;
     public static void main(String[] args) throws IOException {
-        PROJECT_NAME = args[5];
+        PROJECT_NAME = args[4];
+        SECURITY_KEY = args[5];
         assert(PROJECT_NAME.matches("[A-Za-z]"));
-        final ServerHandler server = new ServerHandler(args[0], Integer.parseInt(args[1]));
+        server = new ServerHandler(args[0], Integer.parseInt(args[1]));
         final JFrame frame = new JFrame();
         frame.setSize(width, height);
         frame.setName("KTBS-LS");
@@ -46,9 +49,10 @@ public class Main {
         button.setVisible(true);
         frame.add(button);
         // For file management
-        FileManager.DATA_PER_FILE = Integer.parseInt(args[4]);
-
+        FileManager.DATA_PER_FILE = Integer.parseInt(args[3]);
         final File file = new File(args[2]);
+        FileManager.init(file);
+
         while(!finished){
             //FLUSH BECAUSE IF I DON'T IT DOESN'T WORK
             //PLEASE HELP ME ON THIS

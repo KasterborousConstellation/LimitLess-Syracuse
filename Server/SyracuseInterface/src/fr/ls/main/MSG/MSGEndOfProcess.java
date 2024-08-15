@@ -19,6 +19,7 @@ public class MSGEndOfProcess extends MSGFeedback{
     public void handleLate(DisplayAgentContainer container, Client client, String message) {
         container.getDisplay(client).end();
         container.removeAgent(client);
+        Main.server.removeClient(client);
         container.revalidate();
     }
 }

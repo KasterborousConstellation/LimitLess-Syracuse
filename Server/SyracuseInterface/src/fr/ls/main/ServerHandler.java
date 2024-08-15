@@ -31,6 +31,7 @@ public class ServerHandler {
     }
     public void acceptNewClient(){
         try{
+            serverSocket.setSoTimeout(10_000);
             final Socket socket = serverSocket.accept();
             final Client client = new Client(socket);
             clients.add(client);
@@ -42,6 +43,9 @@ public class ServerHandler {
             e.printStackTrace();
         }
     }
+    public void removeClient(Client client){
+        clients.remove(client);
+    }
     public ReadRecord read(){
         for(Client client: clients){
             if(client.canRead()){
@@ -49,5 +53,12 @@ public class ServerHandler {
             }
         }
         return ReadRecord.errorRecord;
+    }
+    public void breach(Client client){
+        try {
+            client.getSocket().close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

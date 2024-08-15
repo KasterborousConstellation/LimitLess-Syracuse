@@ -9,16 +9,25 @@ import java.util.Objects;
 import static java.lang.System.exit;
 
 public class FileManager {
+    /*
+    This variable is used to offset the encoded data to avoid null characters, line terminators and other
+    special characters that could be problematic when writing to a file.
+    As data is encoded up to 10111011 (0xBB) and the offset is 33, the encoded data will be between 33 and 221.
+     */
+    public static short ENCODING_OFFSET = (short) 33 ;
     public static int DATA_PER_FILE;
     public static File storing_dir;
     public static ArrayList<StorageFile> storage = new ArrayList<>();
     public static void init(File file){
         storing_dir = file;
+        if(!file.exists()){
+            FileUtils.createDirectory(file);
+        }
         System.out.println("FILE MANAGER INIT");
         //READ
         final File[] files_stored = storing_dir.listFiles();
         if(files_stored==null){
-            System.out.println("INCORRECT STORAGE DIRECTORY");
+            System.err.println("INCORRECT STORAGE DIRECTORY OR PERMISSION DENIED");
             exit(1);
             return;
         }
@@ -42,5 +51,8 @@ public class FileManager {
     private static void parseError(String message){
         System.err.println(message);
         exit(1);
+    }
+    public static String getFileName(int index){
+        return "SKTBS_"+Main.PROJECT_NAME+"_"+index;
     }
 }
