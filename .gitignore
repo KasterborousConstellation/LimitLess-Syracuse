@@ -1,5 +1,4 @@
 *.o
-main
 .idea
 build
 out
