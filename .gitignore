@@ -1,5 +1,5 @@
 *.o
-*.class
 main
 .idea
 build
+out
