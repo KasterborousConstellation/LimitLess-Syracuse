@@ -45,7 +45,13 @@ public class FileManager {
                 parseError("INCORRECT STORAGE FILE NAME: "+name);
                 return;
             }
-
+            final StorageFile storageFile = new StorageFile(file_index);
+            if(storageFile.exist()){
+                storageFile.read();
+            }else{
+                storageFile.write();
+            }
+            storage.add(storageFile);
         }
     }
     private static void parseError(String message){

@@ -35,7 +35,7 @@ public class FileUtils {
     }
     public static ArrayList<String> read(File file) {
         try {
-            final FileReader reader = new FileReader(file, StandardCharsets.ISO_8859_1);
+            final FileReader reader = new FileReader(file, StandardCharsets.UTF_16);
             final ArrayList<String> lines = new ArrayList<>();
             final BufferedReader bufferedReader = new BufferedReader(reader);
             String line;

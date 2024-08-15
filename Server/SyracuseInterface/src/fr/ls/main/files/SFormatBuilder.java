@@ -1,5 +1,7 @@
 package fr.ls.main.files;
 
+import java.io.File;
+
 public class SFormatBuilder {
     private final StringBuilder builder;
     private byte parse = 0;
@@ -37,5 +39,8 @@ public class SFormatBuilder {
             current = 0;
             parse = 0;
         }
+    }
+    public void write(File file){
+        FileUtils.write(file,builder.toString());
     }
 }
