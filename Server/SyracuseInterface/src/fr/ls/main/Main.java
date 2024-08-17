@@ -1,11 +1,13 @@
 package fr.ls.main;
 import fr.ls.main.MSG.*;
 import fr.ls.main.files.FileManager;
+import fr.ls.main.files.SData;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 
 public class Main {
     private static int height = 720;
@@ -52,7 +54,8 @@ public class Main {
         FileManager.DATA_PER_FILE = Integer.parseInt(args[3]);
         final File file = new File(args[2]);
         FileManager.init(file);
-
+        SData data = FileManager.getData(BigInteger.ZERO);
+        System.out.println(""+data);
         while(!finished){
             //FLUSH BECAUSE IF I DON'T IT DOESN'T WORK
             //PLEASE HELP ME ON THIS
