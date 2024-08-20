@@ -12,9 +12,8 @@ public enum CharacterSet {
     U_8((short)8,'8'),
     U_9((short)9,'9'),
     U_0((short)10,'0'),
-    U_SEPARATOR((short)11,';'),
-    U_END_OF_LINE((short) 12,'\n'),
-    U_ERROR((short)13,'?')
+    U_END_OF_LINE((short) 11,'\n'),
+    U_ERROR((short)12,'?')
     ;
     private short value;
     private char character;

@@ -1,6 +1,7 @@
 package fr.ls.main;
 import fr.ls.main.MSG.*;
 import fr.ls.main.files.FileManager;
+import fr.ls.main.files.FileUtils;
 import fr.ls.main.files.SData;
 
 import javax.swing.*;
@@ -42,20 +43,29 @@ public class Main {
         final JScrollPane scrollPane = new JScrollPane(area);
         scrollPane.setBounds(width - textWidth - margin, 0, textWidth, textHeight);
         frame.add(scrollPane, "Center");
-        frame.setVisible(true);
+
         area.send("SERVER ONLINE");
         DisplayAgentContainer container = new DisplayAgentContainer();
         frame.add(container);
         final ConnexionButton button = new ConnexionButton("Connect Client",server);
+        final SaveCacheButton saveCacheButton = new SaveCacheButton("Save Cache");
         button.setBounds(width - textWidth - margin, textHeight+margin, 200, 20);
         button.setVisible(true);
+        Rectangle bounds = button.getBounds();
+        bounds.translate(0,30);
+        saveCacheButton.setBounds(bounds);
+        saveCacheButton.setVisible(true);
         frame.add(button);
+        frame.add(saveCacheButton);
+        final EditContainer editsContainer = new EditContainer();
+        editsContainer.setBounds(width - textWidth - margin,textHeight+margin+30*2,200,130);
+        editsContainer.setVisible(true);
+        frame.add(editsContainer);
+        frame.setVisible(true);
         // For file management
         FileManager.DATA_PER_FILE = Integer.parseInt(args[3]);
-        final File file = new File(args[2]);
+        File file = new File(args[2]);
         FileManager.init(file);
-        SData data = FileManager.getData(BigInteger.ZERO);
-        System.out.println(""+data);
         while(!finished){
             //FLUSH BECAUSE IF I DON'T IT DOESN'T WORK
             //PLEASE HELP ME ON THIS

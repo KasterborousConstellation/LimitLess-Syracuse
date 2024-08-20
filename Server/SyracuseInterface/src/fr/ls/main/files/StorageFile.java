@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import static java.lang.System.exit;
+
 public class StorageFile {
     private final String path;
     private final int index;
@@ -24,7 +24,7 @@ public class StorageFile {
     public void read(){
         final String content = FileUtils.read(file).get(0);
         final char[] chars = content.toCharArray();
-        final SDataBuilder builder = new SDataBuilder();
+        final SFormatReader builder = new SFormatReader();
         for(char chr : chars){
             builder.feed(chr);
         }
@@ -46,14 +46,15 @@ public class StorageFile {
                 FileManager.parseError("UNABLE TO CREATE FILE: "+path);
             }
         }
-        final SFormatBuilder builder = new SFormatBuilder();
+        final SFormatWriter builder = new SFormatWriter();
         for(final SData d : data){
             builder.feed(d);
         }
+        builder.flush();
         builder.write(file);
     }
-    public void set(int index,String key,String entry){
-        data[index] = new SData(key,entry);
+    public void set(int index,String entry){
+        data[index] = new SData(entry);
     }
     public int getIndex(){
         return index;

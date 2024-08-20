@@ -1,9 +1,6 @@
 package fr.ls.main.files;
 
-public record SData(String entry, String value) {
-    public String getEntry() {
-        return entry;
-    }
+public record SData(String value) {
     public String getValue() {
         return value;
     }
