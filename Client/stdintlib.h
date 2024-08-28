@@ -43,10 +43,21 @@ stdint* addition(stdint* a, stdint* b); /////
 void selfAddition(stdint* a, stdint* b); ////
 stdint* multiplication(stdint* a, stdint* b); ////
 void selfMultiplication(stdint* a, stdint* b); ////
+void selfSubstraction(stdint* a, stdint* b); ////
+stdint* substraction(stdint* a, stdint* b); ////
+void divide(stdint* a, stdint* b); ////
 //CAST FUNCTIONS
 stdint* intToStd(unsigned int i); ///
 stdint* ordinalToStd(ordinal i); ////
 //Conversion
 char* convertToChar(stdint* a); ////
 void printDecimalStdInt(stdint* a); ////
+stdint* stdAtoi(char* str); ////
+//BIT MANIPULATION
+stdint* reverse(stdint* a,format upTo); ////
+ordinal getPositionMSB(stdint* a); ////
+//COMPARISON FUNCTIONS
+bool isGreater(stdint* a, stdint* b); ////
+bool isGreaterOrEquals(stdint* a, stdint* b); ////
+
 #endif

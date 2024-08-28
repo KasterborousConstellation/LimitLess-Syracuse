@@ -5,6 +5,12 @@
 #define LONG_SIZE 64
 #define LONGMAX 9223372036854775807
 #define INTMAX 2147483647
+format min(format a,format b){
+    return (a<b)?a:b;
+}
+format max(format a,format b){
+    return (a>b)?a:b;
+}
 stdint* stdint_from(format* array,ordinal size,ordinal capacity){
     stdint* a = create(capacity);
     a->size = size;
@@ -426,5 +432,135 @@ void selfMultiplication(stdint* a, stdint* b){
     a->data = res->data;
     a->size = res->size;
     a->capacity = res->capacity;
-    del(res);
+    //DO NOT TOUCH
+    free(res);
+}
+ordinal getPositionMSB(stdint* a){
+    ordinal pos = 0;
+    for(ordinal i=0;i<getSize(a)*INT_SIZE;i++){
+        if(getStdBit(a,i)){
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+stdint* reverse(stdint* a,format upTo){
+    stdint* res = copy(a);
+    for(ordinal i = 0;i<min(upTo,getSize(a)*INT_SIZE);i++){
+        setStdBit(res,i,!getStdBit(a,i));
+    }
+    return res;
+}
+bool isGreater(stdint* a, stdint* b){
+    if(getPositionMSB(a)>getPositionMSB(b)){
+        return true;
+    }else if(getPositionMSB(a)<getPositionMSB(b)){
+        return false;
+    }else{
+        for(ordinal i = 0;i<=getPositionMSB(a);i++){
+            ordinal e = getPositionMSB(a)-i;
+            if(getStdBit(a,e)>getStdBit(b,e)){
+                return true;
+            }else if(getStdBit(a,e)<getStdBit(b,e)){
+                return false;
+            }
+        }
+    }
+    return false;
+}
+bool isGreaterOrEquals(stdint* a, stdint* b){
+    if(getPositionMSB(a)>getPositionMSB(b)){
+        return true;
+    }else if(getPositionMSB(a)<getPositionMSB(b)){
+        return false;
+    }else{
+        for(ordinal i = 0;i<=getPositionMSB(a);i++){
+            ordinal e = getPositionMSB(a)-i;
+            if(getStdBit(a,e)>getStdBit(b,e)){
+                return true;
+            }else if(getStdBit(a,e)<getStdBit(b,e)){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+void selfSubstraction(stdint* a, stdint* b){
+    assert(isGreater(a,b)||isEquals(a,b));
+    ordinal a_msb = getPositionMSB(a);
+    stdint* rev = reverse(b,a_msb+1);
+    stdint* tmp = copy(a);
+    stdint* one = intToStd(1);
+    selfAddition(tmp,one);
+    selfAddition(tmp,rev);
+    for(ordinal e =0;e<=a_msb;e++){
+        setStdBit(a,e,getStdBit(tmp,e));
+    }
+    del(one);
+    del(tmp);
+    del(rev);
+}
+int getN(char c){
+    switch(c){
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        case '2':
+            return 2;
+        case '3':
+            return 3;
+        case '4':  
+            return 4;
+        case '5':  
+            return 5;
+        case '6':
+            return 6;
+        case '7':
+            return 7;
+        case '8':   
+            return 8;
+        case '9':
+            return 9;
+        default:
+            return 0;
+    }
+}
+stdint* stdAtoi(char* str){
+    stdint* res = intToStd(0);
+    stdint* tmp= intToStd(1);
+    stdint* ten = intToStd(10);
+    for(ordinal i = 0;i<strlen(str);i++){
+        char c = str[strlen(str)-i-1];
+        if(c>='0'&&c<='9'){
+            int int_data = getN(c);
+            stdint* tmp2 = intToStd(int_data);
+            stdint* tadd = multiplication(tmp,tmp2);
+            selfAddition(res,tadd);
+            del(tadd);
+            del(tmp2);
+        }
+        selfMultiplication(tmp,ten);
+    }
+    del(ten);
+    del(tmp);
+    return res;
+}
+stdint* substraction(stdint* a, stdint* b){
+    stdint* res = copy(a);
+    selfSubstraction(res,b);
+    return res;
+}
+stdint* division(stdint* a, stdint* b){
+    stdint* res = intToStd(0);
+    stdint* tmp = copy(a);
+    stdint* one = intToStd(1);
+    while(isGreaterOrEquals(tmp,b)){
+        selfSubstraction(tmp,b);
+        selfAddition(res,one);
+    }
+    del(tmp);
+    del(one);
+    return res;
 }

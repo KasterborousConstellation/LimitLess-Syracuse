@@ -1,12 +1,13 @@
 #include "stdsocket.h"
 #include "coreLib.h"
-#define PARAMS 5
+#include "stdsender.h"
+#define PARAMS 6
 void freeOrders(int** orders){
     free(orders[0]);
     free(orders[1]);
     free(orders);
 }
-int main(int argc, char **argv) {
+int main(int argc, char **argv){
     if(argc!=PARAMS){
         printf("Wrong number of parameters, given: %d wanted: %d\n", argc,PARAMS);
         return 0;
@@ -18,10 +19,11 @@ int main(int argc, char **argv) {
         num_threads=1;
     }
     printf("Found threads: %d\n",num_threads);
-    int range_begin = atoi(argv[1]);
-    int range_end = atoi(argv[2]);
+    stdint* range_begin = stdAtoi(argv[1]);
+    stdint* range_end = stdAtoi(argv[2]);
+    int comm_buff_size = atoi(argv[5]);
     // Check if the range is valid
-    if(range_begin < 0 || range_end < 0 || range_begin > range_end){
+    if(!isGreater(range_end,range_begin)){
         printf("Invalid range\n");
         return 0;
     }
@@ -32,6 +34,8 @@ int main(int argc, char **argv) {
     struct sockaddr_in* server_adress = getSocket(port);
     int server_fd= allocateSocket(server_adress);
     printf("Socket allocated\n");
+    printf("Server communication buffer\n");
+    init_sender(comm_buff_size,server_fd);
     printf("Connecting...\n");
     int connexion =-1;
     while(connexion==-1){
@@ -59,18 +63,21 @@ int main(int argc, char **argv) {
     //THREADS ALLOCATION
     sleep(1);
     printf("Creating threads\n");
-    pthread_t* threads_id=malloc(num_threads*sizeof(pthread_t));
+    pthread_t* threads_id=malloc(num_threads * sizeof(pthread_t));
     int** orders = getThreadsOrder(num_threads,range_begin,range_end);
     createThreads(num_threads,threads_id,orders,server_fd);
     printf("Threads created\n");
     waitThreads(num_threads,threads_id);
     printf("Threads finished\n");
+    printf("Flushing data\n");
+    flush();
     //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
     sendToServer(server_fd,createOrder(ENDOFPROCESS,0));
     freeOrders(orders);
     free(server_adress);
     free(threads_id);
+    destroy_sender();
     //CLOSE CONNEXION
     shutdown(server_fd,SHUT_RDWR);
     return 0;

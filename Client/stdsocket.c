@@ -1,6 +1,23 @@
 #include "stdsocket.h"
 #include <string.h>
 #define THREAD_PARAM_SIZE 4
+void* thread_function(void* arg) {
+    int* THREAD_PARAMS = arg;
+    int id = THREAD_PARAMS[0];
+    int start = THREAD_PARAMS[1];
+    int range = THREAD_PARAMS[2];
+    int client = THREAD_PARAMS[3];
+    printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
+    sendToServer(client,createOrder(THREADONLINE,id));
+    sendThreadDescription(client,id,"Thread is starting");
+
+
+
+    
+        
+    sendToServer(client,createOrder(ENDOFTHREAD,id));
+    return NULL;
+}
 char* createOrder(char type,int thread){
     stdint* i = intToStd(thread);
     char* sequence = convertToChar(i);
@@ -15,36 +32,32 @@ char* createOrder(char type,int thread){
     free(sequence);
     return sequence2;
 }
-void* thread_function(void* arg) {
-    int* THREAD_PARAMS = arg;
-    int id = THREAD_PARAMS[0];
-    int start = THREAD_PARAMS[1];
-    int range = THREAD_PARAMS[2];
-    int client = THREAD_PARAMS[3];
-    printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
-    sendToServer(client,createOrder(THREADONLINE,id));
-    sendThreadDescription(client,id,"Thread is starting");
-    sleep(1);
-    sendToServer(client,createOrder(ENDOFTHREAD,id));
-    return NULL;
-}
+
 void set(int* a, int i, int value){
     a[i] = value;
 }
-int** getThreadsOrder(int num_threads,int range_begin,int range_end){
-    int range_width = range_end-range_begin;
-    int* THREADS_RANGE = malloc(sizeof(int)*num_threads);
-    int* START_THREADS = malloc(sizeof(int)*num_threads);
+stdint*** getThreadsOrder(int num_threads,stdint* range_begin,stdint* range_end){
+    stdint* range_width = substraction(range_end,range_begin);
+    stdint** THREADS_RANGE = malloc(sizeof(stdint*)*num_threads);
+    stdint** START_THREADS = malloc(sizeof(stdint*)*num_threads);
+    stdint* num_thr = intToStd(num_threads);
+    stdint* scalar = division(range_width,num_thr);
     for(int i=0;i<num_threads;i++){
-        START_THREADS[i] = range_begin + i* range_width/num_threads;
+        stdint* i_std = intToStd(i);
+        stdint* calc = multiplication(scalar,i_std);
+        START_THREADS[i] = addition(range_begin,calc);
+        del(calc);
+        del(i_std);
     }
+    del(num_thr);
     THREADS_RANGE[num_threads-1] =range_end- START_THREADS[num_threads-1];
     for(int i = 0 ;i<num_threads-1;i++){
         THREADS_RANGE[i] = START_THREADS[i+1]-START_THREADS[i];
     }
-    int** orders=malloc(2*sizeof(int*));
+    stdint*** orders=malloc(2*sizeof(stdint**));
     orders[1] = THREADS_RANGE;
     orders[0] = START_THREADS;
+    del(range_width);
     return orders;
 }
 void createThreads(int num_threads,pthread_t* threads_id,int** orders, int client){

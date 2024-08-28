@@ -11,4 +11,5 @@ typedef struct Sbuffer {char* buffer; int buff_max_size; int current_size;pthrea
 void init_sender(int buffer_size, int server_fd);
 void append(Sdata data);
 void destroy_sender();
+void flush();
 #endif

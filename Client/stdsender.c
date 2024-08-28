@@ -14,7 +14,7 @@ void init_sender(int buffer_size, int server_fd){
     pthread_mutex_init(&gbuffer->buffer_lock,NULL);
     clear_buffer();
 }
-void send(){
+void sendSdata(){
     sendToServer(server_descriptor,gbuffer->buffer);
     clear_buffer();
 }
@@ -30,7 +30,7 @@ void appendSTR(char* str){
     int current_size = gbuffer->current_size;
     int buff_max_size = gbuffer->buff_max_size;
     if(current_size+str_length>buff_max_size){
-        send();
+        sendSdata();
         strcat(gbuffer->buffer,str);
         gbuffer->current_size += str_length;
     }else{
@@ -56,4 +56,7 @@ void destroy_sender(){
     pthread_attr_destroy(&gbuffer->buffer_lock);
     free(gbuffer->buffer);
     free(gbuffer);
+}
+void flush(){
+    sendSdata();
 }

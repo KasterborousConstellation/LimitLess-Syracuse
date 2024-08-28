@@ -5,6 +5,7 @@ FLAGS = -Wall -Wextra -std=c99 -pedantic
 #PARAMS
 RANGE_BEGIN = 1000
 RANGE_END = 2000
+COMM_BUFF_SIZE = 65536
 
 #SOCKET
 ADDRESS = "0.0.0.0"
@@ -25,7 +26,7 @@ corelib: coreLib.c coreLib.h
 	$(COMPILER) -c coreLib.c $(FLAGS)
 C: main.c syracuselib stdintlib stdsocket corelib stdsender
 	$(COMPILER) -o main syracuselib.o stdintlib.o stdsocket.o stdsender.o coreLib.o main.c $(FLAGS)
-	./main $(RANGE_BEGIN) $(RANGE_END) $(PORT) $(SECURITY_KEY)
+	./main $(RANGE_BEGIN) $(RANGE_END) $(PORT) $(SECURITY_KEY) $(COMM_BUFF_SIZE)
 archivage:
 	tar -zcvf tab.tar *c *h Makefile
 clean: 
