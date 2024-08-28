@@ -72,13 +72,12 @@ public class Main {
             System.out.flush();
             final ReadRecord message = server.read();
             if(message == ReadRecord.errorRecord)continue;
-            final Client client = message.client();
+            final Agent agent = message.agent();
             final MSGFeedback fb = MessageHandler.parseFeedBack(message.line());
-            fb.handle(container,client,message.line());
-            final Agent agent = container.getAgent(client);
+            fb.handle(container,agent,message.line());
             if(agent==null)continue;
             System.out.println("RECEIVED from "+agent.getName()+":"+message.line());
-            fb.handleLate(container,client,message.line());
+            fb.handleLate(container,agent,message.line());
         }
     }
     public static void sendMessage(Agent agent, String message){

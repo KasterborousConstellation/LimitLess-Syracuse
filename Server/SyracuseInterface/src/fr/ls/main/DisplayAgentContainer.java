@@ -2,6 +2,8 @@ package fr.ls.main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class DisplayAgentContainer extends JPanel {
@@ -15,13 +17,13 @@ public class DisplayAgentContainer extends JPanel {
     public int getConnexions(){
         return containers.size();
     }
-    public void createAgent(Client client){
-        final AgentContainer container = new AgentContainer(new Agent(client));
+    public void createAgent(Agent agent) throws IOException {
+        final AgentContainer container = new AgentContainer(agent);
         this.containers.add(container);
         JScrollPane scrollPane = new JScrollPane(container);
         add(scrollPane);
     }
-    public void removeAgent(Client client){
+    public void removeAgent(Agent client){
         final AgentContainer container = getDisplay(client);
         if(container != null){
             this.containers.remove(container);
@@ -30,12 +32,9 @@ public class DisplayAgentContainer extends JPanel {
             updateUI();
         }
     }
-    public Agent getAgent(Client client){
-        return getDisplay(client)!=null?getDisplay(client).getAgent():null;
-    }
-    public AgentContainer getDisplay(Client client){
+    public AgentContainer getDisplay(Agent agent){
         for(AgentContainer container: containers){
-            if(client.readUUID().equals(container.getAgent().getClient().readUUID())){
+            if(agent.readUUID().equals(container.getAgent().readUUID())){
                 return container;
             }
         }

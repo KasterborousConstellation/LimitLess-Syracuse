@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerHandler {
     private ServerSocket serverSocket;
-    private final ConcurrentLinkedQueue<Client> clients = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Agent> clients = new ConcurrentLinkedQueue<>();
     private int port;
     private String local_adress;
     public ServerHandler(String address, int port) throws IOException {
@@ -33,7 +33,7 @@ public class ServerHandler {
         try{
             serverSocket.setSoTimeout(10_000);
             final Socket socket = serverSocket.accept();
-            final Client client = new Client(socket);
+            final Agent client = new Agent(socket);
             clients.add(client);
             Main.area_glb.send("A new Client has been initialized "+client.getSocket().getInetAddress().getHostAddress());
             client.write("Server Greetings");
@@ -43,22 +43,30 @@ public class ServerHandler {
             e.printStackTrace();
         }
     }
-    public void removeClient(Client client){
+    public void removeAgent(Agent client){
         clients.remove(client);
     }
     public ReadRecord read(){
-        for(Client client: clients){
+        for(Agent client: clients){
             if(client.canRead()){
                 return client.read();
             }
         }
         return ReadRecord.errorRecord;
     }
-    public void breach(Client client){
+    public void breach(Agent client){
         try {
             client.getSocket().close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public Agent getAgent(int id){
+        for(Agent client: clients){
+            if(client.getThreads() == id){
+                return client;
+            }
+        }
+        return null;
     }
 }

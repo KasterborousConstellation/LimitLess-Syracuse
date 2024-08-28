@@ -1,7 +1,7 @@
 package fr.ls.main.MSG;
 
 
-import fr.ls.main.Client;
+import fr.ls.main.Agent;
 import fr.ls.main.DisplayAgentContainer;
 
 public class MSGUnknown extends MSGFeedback{
@@ -10,7 +10,7 @@ public class MSGUnknown extends MSGFeedback{
     }
 
     @Override
-    public void handle(DisplayAgentContainer container, Client client, String message) {
+    public void handle(DisplayAgentContainer container, Agent client, String message) {
         fault();
     }
 

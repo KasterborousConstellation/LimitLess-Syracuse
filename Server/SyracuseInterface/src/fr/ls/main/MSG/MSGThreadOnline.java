@@ -13,9 +13,9 @@ public class MSGThreadOnline extends MSGFeedback{
     }
 
     @Override
-    public void handle(DisplayAgentContainer container, Client client, String message) {
+    public void handle(DisplayAgentContainer container, Agent client, String message) {
         ThreadPanel threadPanel = container.getDisplay(client).getPanel(getThread());
         threadPanel.setStatus(ThreadState.ONLINE);
-        Main.sendMessage(container.getAgent(client),"Thread "+getThread()+" online");
+        Main.sendMessage(client,"Thread "+getThread()+" online");
     }
 }

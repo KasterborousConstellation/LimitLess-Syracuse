@@ -1,6 +1,6 @@
 package fr.ls.main.MSG;
 
-import fr.ls.main.Client;
+import fr.ls.main.Agent;
 import fr.ls.main.DisplayAgentContainer;
 
 public abstract class MSGFeedback {
@@ -16,8 +16,8 @@ public abstract class MSGFeedback {
     public long getTime(){
         return time;
     }
-    public abstract void handle(DisplayAgentContainer container,Client client, String message);
-    public void handleLate(DisplayAgentContainer container, Client client, String message){
+    public abstract void handle(DisplayAgentContainer container, Agent client, String message);
+    public void handleLate(DisplayAgentContainer container, Agent client, String message){
 
     }
 }

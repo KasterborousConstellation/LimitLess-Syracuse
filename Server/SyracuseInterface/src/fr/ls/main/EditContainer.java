@@ -10,7 +10,6 @@ import java.math.BigInteger;
 public class EditContainer extends JPanel {
     private final JTextField targetArea;
     private final JTextField valueArea;
-
     public EditContainer(){
         super();
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));

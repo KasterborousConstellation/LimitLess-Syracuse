@@ -18,6 +18,7 @@
 #define AGENTONLINE 'A'
 #define AGENTTHREAD 'L'
 #define THREADDESCRIPTION 'D'
+#define DATASENDING 'S'
 struct sockaddr_in* getSocket(int port);
 int allocateSocket();
 void err(int errn);
