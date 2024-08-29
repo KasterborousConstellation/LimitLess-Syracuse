@@ -20,6 +20,7 @@ public class ThreadPanel extends JPanel {
         this.descriptor = new JLabel("No information");
         setBackground(threadColor);
         setStatus(ThreadState.OFFLINE);
+        setSize(Main.threadContainerWidth/3,30);
         add(title);
         add(status);
         add(descriptor);

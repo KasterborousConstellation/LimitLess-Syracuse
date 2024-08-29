@@ -17,10 +17,14 @@ public class DisplayAgentContainer extends JPanel {
     public int getConnexions(){
         return containers.size();
     }
+    private JScrollPane scrollPane;
     public void createAgent(Agent agent) throws IOException {
         final AgentContainer container = new AgentContainer(agent);
         this.containers.add(container);
         JScrollPane scrollPane = new JScrollPane(container);
+        scrollPane.setPreferredSize(new Dimension(Main.threadContainerWidth,Main.threadContainerHeight));
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //Limit the vertical scrolling up to N pixels
         add(scrollPane);
     }
     public void removeAgent(Agent client){

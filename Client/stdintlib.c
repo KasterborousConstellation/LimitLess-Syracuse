@@ -531,7 +531,7 @@ stdint* stdAtoi(char* str){
     stdint* res = intToStd(0);
     stdint* tmp= intToStd(1);
     stdint* ten = intToStd(10);
-    for(ordinal i = 0;i<strlen(str);i++){
+    for(size_t i = 0;i<strlen(str);i++){
         char c = str[strlen(str)-i-1];
         if(c>='0'&&c<='9'){
             int int_data = getN(c);

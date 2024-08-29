@@ -32,8 +32,12 @@ public class AgentContainer extends JPanel {
         setBounds(Main.margin,Main.margin,Main.threadContainerWidth,Main.threadContainerHeight+5*Main.margin);
         setBackground(Color.LIGHT_GRAY);
     }
+
     public void end(){
         this.container.removeAll();
+    }
+    public ThreadContainer getThreadContainer(){
+        return container;
     }
     public ThreadPanel getPanel(int i){
         return container.getPanel(i);

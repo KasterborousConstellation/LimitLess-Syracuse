@@ -8,13 +8,14 @@ void clear_buffer(){
 void init_sender(int buffer_size, int server_fd){
     server_descriptor = server_fd;
     gbuffer = malloc(sizeof(Sbuffer));
-    char* buff_data = (char*)malloc(buffer_size*sizeof(char));
+    char* buff_data = (char*)malloc((buffer_size+1)*sizeof(char));
     gbuffer->buffer = buff_data;
     gbuffer->buff_max_size = buffer_size;
     pthread_mutex_init(&gbuffer->buffer_lock,NULL);
     clear_buffer();
 }
 void sendSdata(){
+    gbuffer->buffer[gbuffer->current_size] = '\0';
     sendToServer(server_descriptor,gbuffer->buffer);
     clear_buffer();
 }
@@ -53,7 +54,7 @@ void append(Sdata data){
     appendSTR(message);
 }
 void destroy_sender(){
-    pthread_attr_destroy(&gbuffer->buffer_lock);
+    pthread_mutex_destroy(&gbuffer->buffer_lock);
     free(gbuffer->buffer);
     free(gbuffer);
 }

@@ -2,19 +2,19 @@
 #include <string.h>
 #define THREAD_PARAM_SIZE 4
 void* thread_function(void* arg) {
-    int* THREAD_PARAMS = arg;
-    int id = THREAD_PARAMS[0];
-    int start = THREAD_PARAMS[1];
-    int range = THREAD_PARAMS[2];
-    int client = THREAD_PARAMS[3];
-    printf("Thread %d ONLINE : start %d range %d\n",id,start,range);
+    //CONVERSION OF ARGUMENTS
+    void** THREAD_PARAMS = arg;
+    int id =*(int*) THREAD_PARAMS[0];
+    stdint* start =(stdint*) THREAD_PARAMS[1];
+    stdint* range =(stdint*) THREAD_PARAMS[2];
+    int client =*(int*) THREAD_PARAMS[3];
+    printf("Thread %d ONLINE\n",id);
+    printf("Start: ");
+    print_stdint(start);
+    printf("Range: ");
+    print_stdint(range);
     sendToServer(client,createOrder(THREADONLINE,id));
     sendThreadDescription(client,id,"Thread is starting");
-
-
-
-    
-        
     sendToServer(client,createOrder(ENDOFTHREAD,id));
     return NULL;
 }
@@ -33,7 +33,7 @@ char* createOrder(char type,int thread){
     return sequence2;
 }
 
-void set(int* a, int i, int value){
+void set(void** a, int i, void* value){
     a[i] = value;
 }
 stdint*** getThreadsOrder(int num_threads,stdint* range_begin,stdint* range_end){
@@ -50,30 +50,38 @@ stdint*** getThreadsOrder(int num_threads,stdint* range_begin,stdint* range_end)
         del(i_std);
     }
     del(num_thr);
-    THREADS_RANGE[num_threads-1] =range_end- START_THREADS[num_threads-1];
+    THREADS_RANGE[num_threads-1] = substraction(range_end, START_THREADS[num_threads-1]);
+    print_stdint(THREADS_RANGE[num_threads-1]);
     for(int i = 0 ;i<num_threads-1;i++){
-        THREADS_RANGE[i] = START_THREADS[i+1]-START_THREADS[i];
+        THREADS_RANGE[i] = substraction(START_THREADS[i+1],START_THREADS[i]);
     }
     stdint*** orders=malloc(2*sizeof(stdint**));
     orders[1] = THREADS_RANGE;
     orders[0] = START_THREADS;
     del(range_width);
+    del(scalar);
+    
     return orders;
 }
-void createThreads(int num_threads,pthread_t* threads_id,int** orders, int client){
-    int* START_THREADS = orders[0];
-    int* THREADS_RANGE = orders[1];
+void createThreads(int num_threads,pthread_t* threads_id,stdint*** orders, int client){
+    stdint** START_THREADS = orders[0];
+    stdint** THREADS_RANGE = orders[1];
     // Create threads
-    int** THREADS_PARAMS = malloc(num_threads*sizeof(int*));
+    void** THREADS_PARAMS = malloc(num_threads*sizeof(int*));
     for(int i = 0; i < num_threads; i++) {
-        int* THREAD_PARAMS = malloc(THREAD_PARAM_SIZE*sizeof(int));
+        void** THREAD_PARAMS = malloc(THREAD_PARAM_SIZE*sizeof(void*));
         THREADS_PARAMS[i] = THREAD_PARAMS;
-        set(THREAD_PARAMS,0,i);
+        int id = i;
+        set(THREAD_PARAMS,0,&id);
         set(THREAD_PARAMS,1,START_THREADS[i]);
         set(THREAD_PARAMS,2,THREADS_RANGE[i]);
-        set(THREAD_PARAMS,3,client);
+        set(THREAD_PARAMS,3,&client);
         printf("Creating thread %d\n", i);
-        printf("Thread %d start %d range %d\n",THREAD_PARAMS[0],THREAD_PARAMS[1],THREAD_PARAMS[2]);
+        printf("Thread id: %d\n",id);
+        printf("Thread start: ");
+        print_stdint(START_THREADS[i]);
+        printf("Thread range: ");
+        print_stdint(THREADS_RANGE[i]);
         pthread_create(threads_id+i, NULL, thread_function, THREADS_PARAMS[i]);
     }
     
