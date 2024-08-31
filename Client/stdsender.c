@@ -47,10 +47,13 @@ void append(Sdata data){
     int result_length = strlen(result);
     int total_length = index_length+result_length+2;
     char* message = (char*)malloc(total_length * sizeof(char));
+    char* separator = malloc(2*sizeof(char));
+    separator[0] = ';';
+    separator[1] = '\0';
     strcat(message,index);
-    strcat(message,';');
+    strcat(message,separator);
     strcat(message,result);
-    strcat(message,';');
+    strcat(message,separator);
     appendSTR(message);
 }
 void destroy_sender(){

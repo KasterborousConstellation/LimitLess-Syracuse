@@ -23,7 +23,7 @@ struct sockaddr_in* getSocket(int port);
 int allocateSocket();
 void err(int errn);
 void sendToServer(int client, char* message);
-void createThreads(int num_threads,pthread_t* threads_id,stdint*** orders, int client);
+void createThreads(int num_threads,pthread_t* threads_id,stdint*** orders, int* client);
 stdint*** getThreadsOrder(int num_threads,stdint* range_begin,stdint* range_end);
 void cancelThread(int id);
 void cancelThreads(int num_threads,pthread_t* threads_id);

@@ -2,8 +2,17 @@
 #include "coreLib.h"
 #include "stdsender.h"
 #define PARAMS 6
-void freeOrders(stdint*** orders){
+void freeOrders(stdint*** orders,int num_threads){
     //FIGURE OUT HOW TO FREE THIS MESS
+    stdint** first = orders[0];
+    stdint** last = orders[1];
+    for(int i = 0; i<num_threads;i++){
+        del(first[i]);
+        del(last[i]);
+    }
+    free(first);
+    free(last);
+    free(orders);
 }
 int main(int argc, char **argv){
     if(argc!=PARAMS){
@@ -63,8 +72,9 @@ int main(int argc, char **argv){
     printf("Creating threads\n");
     pthread_t* threads_id=malloc(num_threads * sizeof(pthread_t));
     stdint*** orders = getThreadsOrder(num_threads,range_begin,range_end);
-    createThreads(num_threads,threads_id,orders,server_fd);
+    createThreads(num_threads,threads_id,orders,&server_fd);
     printf("Threads created\n");
+    sleep(5);
     waitThreads(num_threads,threads_id);
     printf("Threads finished\n");
     printf("Flushing data\n");
@@ -72,7 +82,7 @@ int main(int argc, char **argv){
     //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
     sendToServer(server_fd,createOrder(ENDOFPROCESS,0));
-    freeOrders(orders);
+    freeOrders(orders,num_threads);
     free(server_adress);
     free(threads_id);
     destroy_sender();

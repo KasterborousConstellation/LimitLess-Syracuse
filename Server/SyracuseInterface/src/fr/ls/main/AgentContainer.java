@@ -29,7 +29,7 @@ public class AgentContainer extends JPanel {
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         add(mainPane);
         this.setVisible(true);
-        setBounds(Main.margin,Main.margin,Main.threadContainerWidth,Main.threadContainerHeight+5*Main.margin);
+        setBounds(UIHandler.margin,UIHandler.margin,UIHandler.threadContainerWidth,UIHandler.threadContainerHeight+5*UIHandler.margin);
         setBackground(Color.LIGHT_GRAY);
     }
 

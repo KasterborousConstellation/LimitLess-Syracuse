@@ -379,12 +379,13 @@ char* convertToChar(stdint* a){
 }
 void printDecimalStdInt(stdint* a){
     char* data = convertToChar(a);
+    char* tmp = data;
     while(*data){
         printf("%c",*data);
         data++;
     }
     printf("\n");
-    free(data);
+    free(tmp);
 }
 stdint* multiplication(stdint* a, stdint* b){
     if(isZero(a) || isZero(b)){
@@ -502,30 +503,7 @@ void selfSubstraction(stdint* a, stdint* b){
     del(rev);
 }
 int getN(char c){
-    switch(c){
-        case '0':
-            return 0;
-        case '1':
-            return 1;
-        case '2':
-            return 2;
-        case '3':
-            return 3;
-        case '4':  
-            return 4;
-        case '5':  
-            return 5;
-        case '6':
-            return 6;
-        case '7':
-            return 7;
-        case '8':   
-            return 8;
-        case '9':
-            return 9;
-        default:
-            return 0;
-    }
+    return (int) c - '0';
 }
 stdint* stdAtoi(char* str){
     stdint* res = intToStd(0);

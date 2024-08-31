@@ -1,28 +1,24 @@
 package fr.ls.main;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
-
 public class DisplayAgentContainer extends JPanel {
-    private final static GridLayout layout = new GridLayout(2,30);
+    private final static GridLayout layout = new GridLayout(3,30);
     private final ArrayList<AgentContainer> containers = new ArrayList<>();
     public DisplayAgentContainer(){
         super(layout);
-        setBounds(Main.margin,Main.margin,Main.threadContainerWidth,Main.threadContainerHeight+5*Main.margin);
+        setBounds(UIHandler.margin,UIHandler.margin,UIHandler.threadContainerWidth,UIHandler.threadContainerHeight+5*UIHandler.margin);
         setVisible(true);
     }
     public int getConnexions(){
         return containers.size();
     }
-    private JScrollPane scrollPane;
     public void createAgent(Agent agent) throws IOException {
         final AgentContainer container = new AgentContainer(agent);
         this.containers.add(container);
         JScrollPane scrollPane = new JScrollPane(container);
-        scrollPane.setPreferredSize(new Dimension(Main.threadContainerWidth,Main.threadContainerHeight));
+        scrollPane.setPreferredSize(new Dimension(UIHandler.threadContainerWidth,UIHandler.threadContainerHeight));
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         //Limit the vertical scrolling up to N pixels
         add(scrollPane);

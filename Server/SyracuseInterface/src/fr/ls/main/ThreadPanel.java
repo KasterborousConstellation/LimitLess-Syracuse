@@ -13,14 +13,13 @@ public class ThreadPanel extends JPanel {
     public ThreadPanel(int i){
         super(threadLayout);
         this.thread=i;
-
         final JLabel title = new JLabel("Thread " + thread);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         this.status = new JLabel("?");
         this.descriptor = new JLabel("No information");
         setBackground(threadColor);
         setStatus(ThreadState.OFFLINE);
-        setSize(Main.threadContainerWidth/3,30);
+        setSize(UIHandler.threadContainerWidth/3,30);
         add(title);
         add(status);
         add(descriptor);

@@ -7,8 +7,6 @@ import javax.swing.*;
 public class SaveCacheButton extends JButton {
     public SaveCacheButton(String text) {
         super(text);
-        addActionListener(e -> {
-            FileManager.fileManagerCache.saveCache();
-        });
+        addActionListener(e -> FileManager.fileManagerCache.saveCache());
     }
 }

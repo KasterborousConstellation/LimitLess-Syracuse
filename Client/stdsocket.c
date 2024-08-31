@@ -1,34 +1,20 @@
 #include "stdsocket.h"
 #include <string.h>
+#include "stdsender.h"
+#include <errno.h>
 #define THREAD_PARAM_SIZE 4
-void* thread_function(void* arg) {
-    //CONVERSION OF ARGUMENTS
-    void** THREAD_PARAMS = arg;
-    int id =*(int*) THREAD_PARAMS[0];
-    stdint* start =(stdint*) THREAD_PARAMS[1];
-    stdint* range =(stdint*) THREAD_PARAMS[2];
-    int client =*(int*) THREAD_PARAMS[3];
-    printf("Thread %d ONLINE\n",id);
-    printf("Start: ");
-    print_stdint(start);
-    printf("Range: ");
-    print_stdint(range);
-    sendToServer(client,createOrder(THREADONLINE,id));
-    sendThreadDescription(client,id,"Thread is starting");
-    sendToServer(client,createOrder(ENDOFTHREAD,id));
-    return NULL;
-}
+
 char* createOrder(char type,int thread){
-    stdint* i = intToStd(thread);
-    char* sequence = convertToChar(i);
-    char* sequence2 = malloc((strlen(sequence)+2 )*sizeof(char));
+    stdint* e = intToStd(thread);
+    char* sequence = convertToChar(e);
+    char* sequence2 = malloc((strlen(sequence)+3 )*sizeof(char));
     for(int i =0;i<(int)strlen(sequence);i++){
         sequence2[i+1] = sequence[i];
     }
     sequence2[0] = type;
     sequence2[strlen(sequence)+1] = '\n';
     sequence2[strlen(sequence)+2] = '\0';
-    del(i);
+    del(e);
     free(sequence);
     return sequence2;
 }
@@ -60,32 +46,9 @@ stdint*** getThreadsOrder(int num_threads,stdint* range_begin,stdint* range_end)
     orders[0] = START_THREADS;
     del(range_width);
     del(scalar);
-    
     return orders;
 }
-void createThreads(int num_threads,pthread_t* threads_id,stdint*** orders, int client){
-    stdint** START_THREADS = orders[0];
-    stdint** THREADS_RANGE = orders[1];
-    // Create threads
-    void** THREADS_PARAMS = malloc(num_threads*sizeof(int*));
-    for(int i = 0; i < num_threads; i++) {
-        void** THREAD_PARAMS = malloc(THREAD_PARAM_SIZE*sizeof(void*));
-        THREADS_PARAMS[i] = THREAD_PARAMS;
-        int id = i;
-        set(THREAD_PARAMS,0,&id);
-        set(THREAD_PARAMS,1,START_THREADS[i]);
-        set(THREAD_PARAMS,2,THREADS_RANGE[i]);
-        set(THREAD_PARAMS,3,&client);
-        printf("Creating thread %d\n", i);
-        printf("Thread id: %d\n",id);
-        printf("Thread start: ");
-        print_stdint(START_THREADS[i]);
-        printf("Thread range: ");
-        print_stdint(THREADS_RANGE[i]);
-        pthread_create(threads_id+i, NULL, thread_function, THREADS_PARAMS[i]);
-    }
-    
-}
+
 void waitThreads(int num_threads,pthread_t* threads_id){
     // Wait for threads to finish
     for (int i = 0; i < num_threads; i++) {
@@ -103,24 +66,24 @@ struct sockaddr_in* getSocket(int port){
 void err(int errn){
     switch(errn){
         case 1:
-            printf("Allocation of the socket has failed\n");
+            printf("Allocation of the socket has failed: %s\n", strerror(errno));
             exit(EXIT_FAILURE);
             return;
         case 2:
-            printf("Bind to the port has failed\n");
+            printf("Bind to the port has failed: %s\n", strerror(errno));
             exit(EXIT_FAILURE);
             return;
         case 3:
-            printf("Unable to listen or an error has occured while listening\n");
+            printf("Unable to listen or an error has occured while listening: %s\n", strerror(errno));
             return;
         case 4:
-            printf("Server connexion failed\n");
+            printf("Server connexion failed: %s\n", strerror(errno));
             return;
         case 5:
-            printf("Sending information to server failed\n");
+            printf("Sending information to server failed: %s\n", strerror(errno));
             return;
         default:
-            printf("An unknown error has occured\n");
+            printf("An unknown error has occured: %s\n", strerror(errno));
             return;
     }
     exit(EXIT_FAILURE);
@@ -146,9 +109,11 @@ int connectServer(int server, struct sockaddr_in *addr){
 void sendToServer(int server_fd, char* message){
     char* encoded_input = message;
     printf("Sending: %s",encoded_input);
-    int sent = send(server_fd, encoded_input, strlen(encoded_input), 0);
+    int len = strlen(encoded_input);
+    int sent = send(server_fd, encoded_input, len, 0);
     if (sent == -1) {
         err(5);
+
     }
     return;
 }
@@ -191,4 +156,61 @@ void sendThreadDescription(int client, int thread, char* description){
 }
 void sendAgentOnlineAndSecurity(int client,char agentID,char* key){
     sendDoubleInfoMessage(client,AGENTONLINE,(int)agentID,key);
+}
+void* thread_function(void* arg) {
+    //CONVERSION OF ARGUMENTS
+    void** THREAD_PARAMS = arg;
+    int id =*(int*) THREAD_PARAMS[0];
+    stdint* start =(stdint*) THREAD_PARAMS[1];
+    stdint* range =(stdint*) THREAD_PARAMS[2];
+    int client =*(int*) THREAD_PARAMS[3];
+    printf("Thread %d ONLINE\n",id);
+    printf("Client: %d\n",client);
+    printf("Start: ");
+    print_stdint(start);
+    printf("Range: ");
+    print_stdint(range);
+    sendToServer(client,createOrder(THREADONLINE,id));
+    sendThreadDescription(client,id,"Thread is starting");
+    /*
+    stdint* calc = copy(start);
+    stdint* upto = addition(start,range);
+    stdint* one = intToStd(1);
+    while(!isEquals(calc,upto)){
+        stdint* result = syracuseFlightTime(calc);
+        Sdata data = {calc,result};
+        append(data);
+        calc = addition(calc,one);
+    }
+    del(calc);
+    del(upto);
+    del(one);
+    */
+    sendToServer(client,createOrder(ENDOFTHREAD,id));
+    return NULL;
+}
+void createThreads(int num_threads,pthread_t* threads_id,stdint*** orders, int* client){
+    stdint** START_THREADS = orders[0];
+    stdint** THREADS_RANGE = orders[1];
+    // Create threads
+    int* ids = malloc(num_threads*sizeof(int));
+    for(int i =0;i<num_threads;i++){
+        ids[i] = i;
+    }
+    void** THREADS_PARAMS = malloc(num_threads*sizeof(int*));
+    for(int i = 0; i < num_threads; i++) {
+        void** THREAD_PARAMS = malloc(THREAD_PARAM_SIZE*sizeof(void*));
+        THREADS_PARAMS[i] = THREAD_PARAMS;
+        set(THREAD_PARAMS,0,ids+i);
+        set(THREAD_PARAMS,1,START_THREADS[i]);
+        set(THREAD_PARAMS,2,THREADS_RANGE[i]);
+        set(THREAD_PARAMS,3,client);
+        printf("Creating thread %d\n", i);
+        printf("Thread id: %d\n",ids[i]);
+        printf("Thread start: ");
+        print_stdint(START_THREADS[i]);
+        printf("Thread range: ");
+        print_stdint(THREADS_RANGE[i]);
+        pthread_create(threads_id+i, NULL, thread_function, THREADS_PARAMS[i]);
+    }
 }

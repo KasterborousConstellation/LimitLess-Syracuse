@@ -1,6 +1,7 @@
 #COMPILER
 COMPILER=gcc
-FLAGS = -Wall -Wextra -std=c99 -pedantic
+FLAGS = -Wall -Wextra -std=c99 -pedantic 
+#-fsanitize=address
 
 #PARAMS
 RANGE_BEGIN = 1000

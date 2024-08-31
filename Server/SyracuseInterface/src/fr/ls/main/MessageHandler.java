@@ -18,6 +18,10 @@ public class MessageHandler {
             return null;
         }
     }
+    private static MSGFeedback parseSendingData(String message){
+        final String current = message.substring(1,message.length()-1);
+        return new MSGUnknown(message);
+    }
     public static MSGFeedback parseFeedBack(String message){
         char t = getType(message);
         return switch (t) {
@@ -28,6 +32,7 @@ public class MessageHandler {
             case 'A' -> parseDoubleMessage(message,MSGAgentOnline.class);
             case 'L' -> new MSGNThreads(message,parseThreadNumber(message));
             case 'D' -> parseDoubleMessage(message,MSGThreadDescriptor.class);
+            case 'S' -> parseSendingData(message);
             default -> new MSGUnknown(message);
         };
     }
