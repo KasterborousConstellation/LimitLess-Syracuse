@@ -1,6 +1,5 @@
 #include "stdsocket.h"
 #include "coreLib.h"
-#include "stdsender.h"
 #define PARAMS 6
 void freeOrders(stdint*** orders,int num_threads){
     //FIGURE OUT HOW TO FREE THIS MESS
@@ -15,6 +14,7 @@ void freeOrders(stdint*** orders,int num_threads){
     free(orders);
 }
 int main(int argc, char **argv){
+    printDecimalStdInt(syracuseFlightTime(intToStd(1094)));
     if(argc!=PARAMS){
         printf("Wrong number of parameters, given: %d wanted: %d\n", argc,PARAMS);
         return 0;
@@ -78,9 +78,10 @@ int main(int argc, char **argv){
     waitThreads(num_threads,threads_id);
     printf("Threads finished\n");
     printf("Flushing data\n");
-    //flush();
+    flush();
     //cancelThreads(num_threads,threads_id);
     //FREE MEMORY
+    sleep(1);
     sendToServer(server_fd,createOrder(ENDOFPROCESS,0));
     freeOrders(orders,num_threads);
     free(server_adress);

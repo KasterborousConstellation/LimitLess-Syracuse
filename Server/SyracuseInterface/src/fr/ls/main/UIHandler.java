@@ -1,6 +1,8 @@
 package fr.ls.main;
 
 import fr.ls.main.MSG.MSGFeedback;
+import fr.ls.main.files.FileManager;
+import fr.ls.main.files.FileManagerCache;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +27,13 @@ public class UIHandler {
         frame.setLayout(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                finished = true;
+                FileManager.fileManagerCache.saveCache();
+            }
+        });
         final UpdateArea area = new UpdateArea(10, 10);
         Main.area_glb = area;
         area.setLineWrap(true);

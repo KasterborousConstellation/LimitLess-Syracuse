@@ -2,5 +2,5 @@
 #ifndef SCLIB
 #define SCLIB
 void computeNextSyracuse(stdint* a,stdint* value);
-ordinal syracuseFlightTime(stdint* a);
+stdint* syracuseFlightTime(stdint* a);
 #endif

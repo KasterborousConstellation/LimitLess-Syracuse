@@ -21,13 +21,13 @@ void computeNextSyracuse(stdint* a,stdint* value){
  *   @param a the number to compute the syracuse flight time
  *   @return the syracuse flight time of the number
 */
-ordinal syracuseFlightTime(stdint* a){
-    ordinal i = 0;
+stdint* syracuseFlightTime(stdint* a){
+    stdint* i = intToStd(0);
     stdint* res = copy(a);
     stdint* one = intToStd(1);
     while(!isEquals(res,one)){
         computeNextSyracuse(res,one);
-        i++;
+        selfAddition(i,one);
     }
     del(res);
     del(one);

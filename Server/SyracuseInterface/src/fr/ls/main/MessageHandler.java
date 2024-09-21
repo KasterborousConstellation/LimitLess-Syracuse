@@ -2,8 +2,11 @@ package fr.ls.main;
 
 
 import fr.ls.main.MSG.*;
+import fr.ls.main.files.SData;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class MessageHandler {
     private static int parseThreadNumber(String e){
@@ -20,7 +23,15 @@ public class MessageHandler {
     }
     private static MSGFeedback parseSendingData(String message){
         final String current = message.substring(1,message.length()-1);
-        return new MSGUnknown(message);
+        final String[] parts = current.split(";");
+        assert(parts.length%2==0);
+        final ArrayList<SData> data = new ArrayList<>();
+        final ArrayList<BigInteger> indexes = new ArrayList<>();
+        for(int i = 0; i<parts.length;i+=2) {
+            indexes.add(new BigInteger(parts[i]));
+            data.add(parts[i + 1].equals("#") ? null : new SData(parts[i + 1]));
+        }
+        return new MSGDataSent(message,data,indexes);
     }
     public static MSGFeedback parseFeedBack(String message){
         char t = getType(message);

@@ -1,3 +1,5 @@
+#ifndef STDSOCKET
+#define STDOCKET
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -10,8 +12,6 @@
 #include "syracuselib.h"
 #include <stdio.h>
 #include <pthread.h>
-#ifndef STDSOCKET
-#define STDOCKET
 #define ENDOFPROCESS 'T'
 #define ENDOFTHREAD 'E'
 #define THREADONLINE 'I'
@@ -19,6 +19,12 @@
 #define AGENTTHREAD 'L'
 #define THREADDESCRIPTION 'D'
 #define DATASENDING 'S'
+typedef struct Sdata {stdint* index; stdint* result;} Sdata;
+typedef struct Sbuffer {char* buffer; int buff_max_size; int current_size;pthread_mutex_t buffer_lock;} Sbuffer;
+void init_sender(int buffer_size, int server_fd);
+void append(Sdata data);
+void destroy_sender();
+void flush();
 struct sockaddr_in* getSocket(int port);
 int allocateSocket();
 void err(int errn);

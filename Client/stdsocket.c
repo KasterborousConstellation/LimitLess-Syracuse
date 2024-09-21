@@ -1,9 +1,9 @@
 #include "stdsocket.h"
 #include <string.h>
-#include "stdsender.h"
 #include <errno.h>
 #define THREAD_PARAM_SIZE 4
-
+int server_descriptor;
+Sbuffer* gbuffer;
 char* createOrder(char type,int thread){
     stdint* e = intToStd(thread);
     char* sequence = convertToChar(e);
@@ -105,17 +105,18 @@ int connectServer(int server, struct sockaddr_in *addr){
     }
     return client;
 }
-
-void sendToServer(int server_fd, char* message){
+void unsafeSendToServer(int server_fd, char* message,int len){
     char* encoded_input = message;
-    printf("Sending: %s",encoded_input);
-    int len = strlen(encoded_input);
+    //printf("Sending: %s",encoded_input);
     int sent = send(server_fd, encoded_input, len, 0);
     if (sent == -1) {
         err(5);
 
     }
     return;
+}
+void sendToServer(int server_fd, char* message){
+    unsafeSendToServer(server_fd,message, strlen(message));
 }
 void cancelThread(int id){
     pthread_cancel(id);
@@ -157,6 +158,80 @@ void sendThreadDescription(int client, int thread, char* description){
 void sendAgentOnlineAndSecurity(int client,char agentID,char* key){
     sendDoubleInfoMessage(client,AGENTONLINE,(int)agentID,key);
 }
+
+void clear_buffer(){
+    gbuffer->current_size = 1;
+    gbuffer->buffer[0] = DATASENDING;
+    memset(gbuffer->buffer+1,0,gbuffer->buff_max_size);
+}
+void init_sender(int buffer_size, int server_fd){
+    server_descriptor = server_fd;
+    gbuffer = malloc(sizeof(Sbuffer));
+    char* buff_data = (char*)malloc((buffer_size+2)*sizeof(char));
+    gbuffer->buffer = buff_data;
+    gbuffer->buff_max_size = buffer_size;
+    pthread_mutex_init(&gbuffer->buffer_lock,NULL);
+    clear_buffer();
+}
+void sendSdata(){
+    if(gbuffer->current_size==1){
+        return;
+    }
+    gbuffer->buffer[gbuffer->current_size] = '\n';
+    gbuffer->buffer[gbuffer->current_size+1] = '\0';
+    sendToServer(server_descriptor,gbuffer->buffer);
+    clear_buffer();
+}
+void lock(){
+    pthread_mutex_lock(&gbuffer->buffer_lock);
+}
+void unlock(){
+    pthread_mutex_unlock(&gbuffer->buffer_lock);
+}
+void appendSTR(char* str){
+    int str_length = strlen(str);
+    lock();
+    int current_size = gbuffer->current_size;
+    int buff_max_size = gbuffer->buff_max_size;
+    if(current_size+str_length>buff_max_size){
+        sendSdata();
+        for(int i =gbuffer->current_size;i<gbuffer->current_size+str_length;i++){
+            gbuffer->buffer[i] = str[i-gbuffer->current_size];
+        }
+        gbuffer->current_size += str_length;
+    }else{
+        for(int i =current_size;i<current_size+str_length;i++){
+            gbuffer->buffer[i] = str[i-current_size];
+        }
+        gbuffer->current_size += str_length;
+    }
+    unlock();
+}
+void append(Sdata data){
+    char* index = convertToChar(data.index);
+    char* result = convertToChar(data.result);
+    int index_length = strlen(index);
+    int result_length = strlen(result);
+    int total_length = index_length+result_length+2;
+    char* message = (char*)malloc(total_length * sizeof(char));
+    for(int i = 0; i<index_length;i++){
+        message[i] = index[i];
+    }
+    message[index_length] = ';';
+    for(int i = 0; i<result_length;i++){
+        message[i+index_length+1] = result[i];
+    }
+    message[total_length-1] = ';';
+    appendSTR(message);
+}
+void destroy_sender(){
+    pthread_mutex_destroy(&gbuffer->buffer_lock);
+    free(gbuffer->buffer);
+    free(gbuffer);
+}
+void flush(){
+    sendSdata();
+}
 void* thread_function(void* arg) {
     //CONVERSION OF ARGUMENTS
     void** THREAD_PARAMS = arg;
@@ -172,7 +247,6 @@ void* thread_function(void* arg) {
     print_stdint(range);
     sendToServer(client,createOrder(THREADONLINE,id));
     sendThreadDescription(client,id,"Thread is starting");
-    /*
     stdint* calc = copy(start);
     stdint* upto = addition(start,range);
     stdint* one = intToStd(1);
@@ -185,7 +259,6 @@ void* thread_function(void* arg) {
     del(calc);
     del(upto);
     del(one);
-    */
     sendToServer(client,createOrder(ENDOFTHREAD,id));
     return NULL;
 }
