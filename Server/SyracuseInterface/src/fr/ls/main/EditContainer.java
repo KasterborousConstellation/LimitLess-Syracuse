@@ -32,7 +32,7 @@ public class EditContainer extends JPanel {
         sendButton.addActionListener((e)-> {
             final String target = targetArea.getText();
             final String value = valueArea.getText();
-            if (target.isEmpty() || value.isEmpty()||!target.matches("[0-9]")||!value.matches("[0-9]")) {
+            if (target.isEmpty() || value.isEmpty()||!target.matches("^[0-9]*$")||!value.matches("^[0-9]*$")) {
                 return;
             }
             BigInteger index = new BigInteger(target);
@@ -42,7 +42,8 @@ public class EditContainer extends JPanel {
         });
         getButton.addActionListener((e)->{
             final String target = targetArea.getText();
-            if (target.isEmpty()||!target.matches("[0-9]")) {
+            if (target.isEmpty()||!target.matches("^[0-9]*$")) {
+                System.out.println("Invalid input");
                 return;
             }
             BigInteger index = new BigInteger(target);

@@ -14,7 +14,6 @@ void freeOrders(stdint*** orders,int num_threads){
     free(orders);
 }
 int main(int argc, char **argv){
-    printDecimalStdInt(syracuseFlightTime(intToStd(1094)));
     if(argc!=PARAMS){
         printf("Wrong number of parameters, given: %d wanted: %d\n", argc,PARAMS);
         return 0;

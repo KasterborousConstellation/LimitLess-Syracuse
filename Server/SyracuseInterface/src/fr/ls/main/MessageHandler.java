@@ -22,6 +22,7 @@ public class MessageHandler {
         }
     }
     private static MSGFeedback parseSendingData(String message){
+        System.out.println(message);
         final String current = message.substring(1,message.length()-1);
         final String[] parts = current.split(";");
         assert(parts.length%2==0);

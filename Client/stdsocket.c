@@ -179,6 +179,7 @@ void sendSdata(){
     }
     gbuffer->buffer[gbuffer->current_size] = '\n';
     gbuffer->buffer[gbuffer->current_size+1] = '\0';
+    printf("Sending data: %s\n",gbuffer->buffer);
     sendToServer(server_descriptor,gbuffer->buffer);
     clear_buffer();
 }
@@ -203,6 +204,7 @@ void appendSTR(char* str){
         for(int i =current_size;i<current_size+str_length;i++){
             gbuffer->buffer[i] = str[i-current_size];
         }
+        
         gbuffer->current_size += str_length;
     }
     unlock();
@@ -210,18 +212,7 @@ void appendSTR(char* str){
 void append(Sdata data){
     char* index = convertToChar(data.index);
     char* result = convertToChar(data.result);
-    int index_length = strlen(index);
-    int result_length = strlen(result);
-    int total_length = index_length+result_length+2;
-    char* message = (char*)malloc(total_length * sizeof(char));
-    for(int i = 0; i<index_length;i++){
-        message[i] = index[i];
-    }
-    message[index_length] = ';';
-    for(int i = 0; i<result_length;i++){
-        message[i+index_length+1] = result[i];
-    }
-    message[total_length-1] = ';';
+    char* message = strcat(strcat(strcat(index,";"),result),";");
     appendSTR(message);
 }
 void destroy_sender(){

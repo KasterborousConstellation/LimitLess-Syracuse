@@ -68,32 +68,22 @@ void setPartition(stdint* a,ordinal p,int value){
 }
 void setStdBit(stdint* i, ordinal p,bool value){
     if(p>=getSize(i)*INT_SIZE){
-        ordinal targetted_size = p/16;
+        ordinal targetted_size = 2*p/INT_SIZE;
         resize(i,targetted_size);
     }
     //We now need to know if the p bit is 1 or 0 
     //Case 1 if p bit is 1
     int part = getPartition(i,p/INT_SIZE);
-    int rem = 1<<(p%INT_SIZE);
-    if(getStdBit(i,p)==1){
-        if(value==0){
-            setPartition(i,p/INT_SIZE,part-rem);
-        }
-    }else{
-        if(value==1){
-            setPartition(i,p/INT_SIZE,part+rem);
-        }
-    }
+    int mask = ~(1<<(p%INT_SIZE));
+    setPartition(i,p/INT_SIZE,part&mask | (value<<(p%INT_SIZE)));
 }
 bool getStdBit(stdint* a,ordinal p){
-    if(p>getSize(a)*INT_SIZE){
+    if(p>=getSize(a)*INT_SIZE){
         return 0;
     }
     ordinal place = p/INT_SIZE;
     int part = getPartition(a,place);
-    short remainder = p%INT_SIZE;
-    int extracted_int = part & (1<<remainder);
-    return extracted_int>>remainder;
+    return (part>>p%INT_SIZE) & 1;
 }
 void print_stdint(stdint* a){
     printf("[");
@@ -157,20 +147,17 @@ stdint* addition(stdint* a, stdint* b){
         a = b;
         b= tmp;
     }
-    if(getMSB(a)==1){
-        resize(a,getSize(a)+1);
-    }
     stdint* new = copy(a);
     //Iterate for every bits of new 
     bool ret = 0;
-    for(ordinal i = 0;i<getSize(new)*INT_SIZE-1;i++){
+    for(ordinal i = 0;i<getSize(new)*INT_SIZE;i++){
         bool bit_a = getStdBit(a,i);
         bool bit_b = getStdBit(b,i); 
         bool res = (bit_a + bit_b + ret) & 1; 
         ret = (bit_a + bit_b + ret)/2;
         setStdBit(new,i,res);
     }
-    setStdBit(new,getSize(new)*INT_SIZE-1,ret);
+    setStdBit(new,getSize(new)*INT_SIZE,ret);
     return new;
 }
 stdint* intToStd(unsigned int i){
@@ -248,9 +235,6 @@ void selfAddition(stdint* n, stdint* to_add){
         size = getSize(a);
         resize(b,size);
     }
-    if(getMSB(a)==1||getMSB(b)==1){
-        resize(a,getSize(a)+1);
-    }
     //Iterate for every bits of new 
     bool ret = 0;
     for(ordinal i = 0;i<(size*INT_SIZE);i++){
@@ -260,7 +244,9 @@ void selfAddition(stdint* n, stdint* to_add){
         ret = (bit_a + bit_b + ret)/2;
         setStdBit(a,i,res);
     }
-    setStdBit(a,getSize(a)*INT_SIZE-1,ret);
+    if(ret){
+        setStdBit(a,size*INT_SIZE,ret);
+    }
 }
 /**
  * Converts an ordinal number to its standard form.
